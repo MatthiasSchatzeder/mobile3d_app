@@ -12,7 +12,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         btn_move_axes.setOnClickListener{
-            val intent = Intent (this, MoveAxes::class.java)
+            val intent = Intent (this, Axes::class.java)
+            startActivity(intent)
+        }
+
+        btn_tabs_test.setOnClickListener {
+            val intent = Intent(this, ControlActivity::class.java)
             startActivity(intent)
         }
 
