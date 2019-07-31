@@ -33,19 +33,5 @@ class ControlActivity : AppCompatActivity() {
             }
         }).attach()
 
-
-        /*
-        viewpager.adapter = ViewPagerAdapter()
-
-        TabLayoutMediator(tabs, viewpager, object: TabLayoutMediator.OnConfigureTabCallback{
-            override fun onConfigureTab(tab: TabLayout.Tab, position: Int) {
-                when(position){
-                    0 -> tab.setText("Axes")
-                    1 -> tab.setText("Tool (E)")
-                    2 -> tab.setText("General")
-                }
-            }
-        }).attach()
-        */
     }
 }

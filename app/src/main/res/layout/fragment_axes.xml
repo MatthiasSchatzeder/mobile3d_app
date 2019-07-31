@@ -15,33 +15,31 @@
             android:text="X"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/X"
+            android:id="@+id/x"
             android:fontFamily="sans-serif-medium" android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@+id/btn_left"
             app:layout_constraintStart_toStartOf="@+id/btn_left"/>
 
     <TextView
-            android:text="Y"
+            android:text="Z"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/Y"
+            android:id="@+id/z"
             android:fontFamily="sans-serif-medium" android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@+id/btn_upZ"
             app:layout_constraintStart_toStartOf="@+id/btn_upZ"/>
 
     <TextView
-            android:text="Z"
+            android:text="Y"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/Z"
+            android:id="@+id/y"
             app:layout_constraintBottom_toTopOf="@+id/btn_up" app:layout_constraintStart_toStartOf="@+id/btn_up"
             android:fontFamily="sans-serif-medium" android:textSize="18sp"/>
 
     <!-- X/Y axis buttons-->
     <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_left"
-
-
 
             android:backgroundTint="@color/colorBtn"
             app:icon="@drawable/ic_arrow_left"
@@ -54,7 +52,6 @@
             android:textColor="@color/colorBlack"
             android:layout_width="80dp"
             android:layout_height="80dp"
-
             android:insetTop="0dp"
             android:insetBottom="0dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -62,9 +59,9 @@
             android:layout_marginStart="8dp"/>
 
     <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_home"
-            android:backgroundTint="@color/colorBtn"
+            android:id="@+id/btn_homeXY"
 
+            android:backgroundTint="@color/colorBtn"
             app:icon="@drawable/ic_home"
             app:iconGravity="textStart"
             android:gravity="center"
@@ -74,7 +71,6 @@
             app:rippleColor="@color/colorBlack"
             android:layout_width="80dp"
             android:layout_height="80dp"
-
             app:layout_constraintStart_toEndOf="@+id/btn_left"
             android:layout_marginStart="8dp"
             android:insetTop="0dp"
@@ -93,15 +89,15 @@
             app:rippleColor="@color/colorBlack"
             android:layout_width="80dp"
             android:layout_height="80dp"
-
             android:insetTop="0dp" android:insetBottom="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/btn_home"
+            app:layout_constraintBottom_toTopOf="@+id/btn_homeXY"
             android:layout_marginBottom="8dp" app:layout_constraintStart_toEndOf="@id/btn_left"
             android:layout_marginStart="8dp"/>
 
     <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_right"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+
+            android:backgroundTint="@color/colorBtn"
             app:icon="@drawable/ic_arrow_right"
             app:iconGravity="textStart"
             android:gravity="center"
@@ -113,13 +109,14 @@
             android:layout_height="80dp"
 
             android:insetTop="0dp" android:insetBottom="0dp"
-            app:layout_constraintStart_toEndOf="@+id/btn_home"
+            app:layout_constraintStart_toEndOf="@+id/btn_homeXY"
             android:layout_marginStart="8dp"
             app:layout_constraintTop_toTopOf="@+id/btn_left"/>
 
     <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_down"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+
+            android:backgroundTint="@color/colorBtn"
             app:icon="@drawable/ic_arrow_down"
             app:iconGravity="textStart"
             android:gravity="center"
@@ -132,14 +129,15 @@
 
             android:insetTop="0dp" android:insetBottom="0dp"
             android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/btn_home" app:layout_constraintStart_toEndOf="@+id/btn_left"
+            app:layout_constraintTop_toBottomOf="@+id/btn_homeXY" app:layout_constraintStart_toEndOf="@+id/btn_left"
             android:layout_marginStart="8dp"/>
 
 
     <!-- Z axis buttons-->
     <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_homeZ"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+
+            android:backgroundTint="@color/colorBtn"
             app:icon="@drawable/ic_home"
             app:iconGravity="textStart"
             android:gravity="center"
@@ -149,13 +147,13 @@
             app:rippleColor="@color/colorBlack"
             android:layout_width="80dp"
             android:layout_height="80dp"
-
             android:layout_marginTop="150dp" app:layout_constraintTop_toTopOf="parent" android:insetTop="0dp"
             android:insetBottom="0dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"/>
 
     <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_upZ"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+
+            android:backgroundTint="@color/colorBtn"
             app:icon="@drawable/ic_arrow_up"
             app:iconGravity="textStart"
             android:gravity="center"
@@ -165,7 +163,6 @@
             app:rippleColor="@color/colorBlack"
             android:layout_width="80dp"
             android:layout_height="80dp"
-
             android:insetTop="0dp" android:insetBottom="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/btn_homeZ"
@@ -173,7 +170,8 @@
 
     <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_downZ"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+
+            android:backgroundTint="@color/colorBtn"
             app:icon="@drawable/ic_arrow_down"
             app:iconGravity="textStart"
             android:gravity="center"
@@ -196,17 +194,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:singleSelection="true"
-            app:checkedButton="@id/button2"
+            app:checkedButton="@id/btn_one_mm"
 
             style="@style/Theme.ToggleButtonGroup"
-
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp" android:layout_marginTop="20dp"
             app:layout_constraintTop_toBottomOf="@+id/btn_down">
 
 
         <com.google.android.material.button.MaterialButton
-                android:id="@+id/button1"
+                android:id="@+id/btn_zero_point_one_mm"
                 android:text="0.1mm"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
 
@@ -215,7 +212,7 @@
         />
 
         <com.google.android.material.button.MaterialButton
-                android:id="@+id/button2"
+                android:id="@+id/btn_one_mm"
                 android:text="1mm"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
 
@@ -223,7 +220,7 @@
         />
 
         <com.google.android.material.button.MaterialButton
-                android:id="@+id/button3"
+                android:id="@+id/btn_ten_mm"
                 android:text="10mm"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
 
