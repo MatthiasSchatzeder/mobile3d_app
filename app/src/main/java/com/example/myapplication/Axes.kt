@@ -6,14 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.fragment_axes.*
-import kotlinx.android.synthetic.main.fragment_axes.view.*
+import kotlinx.android.synthetic.main.fragment_axis.view.*
 
 class Axes : Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_axes, container, false)
+        val view = inflater.inflate(R.layout.fragment_axis, container, false)
 
         var distance: Double? = 1.0
         view.btn_zero_point_one_mm.setOnClickListener {

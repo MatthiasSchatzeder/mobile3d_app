@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Mobile 3D</string>
+    <string name="navigation_drawer_close">close navigation drawer</string>
+    <string name="navigation_drawer_open">open navigation drawer</string>
 
 
 </resources>

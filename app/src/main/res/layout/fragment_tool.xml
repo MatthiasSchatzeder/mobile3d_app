@@ -51,6 +51,9 @@
                 android:inputType="number"
                 android:text="5"
                 android:selectAllOnFocus="true"
+                android:clickable="true"
+                android:focusableInTouchMode="true"
+                android:focusable="true"
 
 
         />
@@ -71,19 +74,23 @@
         <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_extrude"
                 android:layout_width="195dp"
-                android:layout_height="70dp"
-                android:layout_toRightOf="@id/btn_retract"
-                android:layout_marginLeft="8dp"
+                android:layout_height="60dp"
+                android:layout_toEndOf="@id/btn_retract"
+                android:layout_marginStart="8dp"
                 android:text="Extrude"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
 
         />
 
         <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_retract"
                 android:layout_width="195dp"
-                android:layout_height="70dp"
+                android:layout_height="60dp"
                 android:text="Retract"
                 android:layout_alignParentStart="true"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
         />
 
 

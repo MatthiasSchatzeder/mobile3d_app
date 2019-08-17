@@ -14,9 +14,14 @@ import kotlinx.android.synthetic.main.fragment_tool.*
 import kotlinx.android.synthetic.main.fragment_tool.view.*
 import kotlinx.android.synthetic.main.fragment_tool.view.text_input_distance
 import kotlin.math.absoluteValue
+import android.app.Activity
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat.getSystemService
 
 
-class Tool : Fragment() {
+
+
+class Tool() : Fragment() {
 
 
     val toolList = listOf<String>("E 1", "E 2", "E 3")
@@ -42,7 +47,22 @@ class Tool : Fragment() {
             Toast.makeText(context, "extruding $tool for " + distance + "mm", Toast.LENGTH_SHORT).show()
         }
 
+        view.text_input_distance.setOnFocusChangeListener { view, hasFocus ->
+            if(!hasFocus){
+                hideKeyboard(view)
+            }
+        }
+
+
         return view
     }
+
+    //function that hides the keyboard
+    fun hideKeyboard(view: View){
+        var inputMethodManager: InputMethodManager = context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+
 
 }
