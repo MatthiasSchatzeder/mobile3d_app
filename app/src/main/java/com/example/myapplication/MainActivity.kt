@@ -8,10 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import android.widget.Toolbar
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -24,6 +21,7 @@ class MainActivity : AppCompatActivity() {
         //init toolbar
         var toolbar = toolbar
         setSupportActionBar(toolbar)
+
 
 
         /**
@@ -59,7 +57,11 @@ class MainActivity : AppCompatActivity() {
                 return@setNavigationItemSelectedListener true
             }
             else if(item.itemId == R.id.item_settings){
-                Toast.makeText(this, "Settings pressed", Toast.LENGTH_SHORT).show()
+                var drawerLayout = drawer_layout
+                drawerLayout.closeDrawers()
+
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
 
                 return@setNavigationItemSelectedListener true
             }
@@ -88,4 +90,6 @@ class MainActivity : AppCompatActivity() {
 
         return super.onOptionsItemSelected(item)
     }
+
+
 }

@@ -32,7 +32,7 @@ class ControlActivity : AppCompatActivity() {
             override fun onConfigureTab(tab: TabLayout.Tab, position: Int) {
                 when(position){
                     0 -> tab.setText("Axis")
-                    1 -> tab.setText("Tool (E)")
+                    1 -> tab.setText("Tool")
                     2 -> tab.setText("General")
                 }
             }
@@ -41,6 +41,7 @@ class ControlActivity : AppCompatActivity() {
         //init toolbar
         var toolbar = toolbar
         setSupportActionBar(toolbar)
+        supportActionBar?.title = "Control"
 
         /**
          * listens to clicks of the Navigation Icon
@@ -67,13 +68,18 @@ class ControlActivity : AppCompatActivity() {
                 var drawerLayout = drawer_layout
                 drawerLayout.closeDrawers()
 
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
+                finish()
+                //val intent = Intent(this, MainActivity::class.java)
+                //startActivity(intent)
 
                 return@setNavigationItemSelectedListener true
             }
             else if(item.itemId == R.id.item_settings){
-                Toast.makeText(this, "Settings pressed", Toast.LENGTH_SHORT).show()
+                var drawerLayout = drawer_layout
+                drawerLayout.closeDrawers()
+
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
 
                 return@setNavigationItemSelectedListener true
             }

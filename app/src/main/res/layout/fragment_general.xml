@@ -22,39 +22,82 @@
 
     />
 
-    <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_fan_on"
+    <!-- Divider -->
+    <View
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="2dp"
+            android:id="@+id/divider"
+            android:background="@android:color/darker_gray"
             app:layout_constraintTop_toBottomOf="@id/btn_motors_off"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:text="Fan on"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:textSize="15dp"
-
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
     />
 
-    <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_fan_off"
+    <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            app:layout_constraintTop_toBottomOf="@id/btn_fan_on"
+            android:layout_height="wrap_content"
+            android:id="@+id/text_input_layout_fan_speed"
+
+            app:layout_constraintTop_toBottomOf="@id/divider"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:text="Fan off"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:textSize="15dp"
+            >
 
-    />
+        <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_input_fan_speed"
+                android:hint="fan speed"
+                android:inputType="number"
+                android:text="255"
+                android:selectAllOnFocus="true"
+                android:clickable="true"
+                android:focusableInTouchMode="true"
+                android:focusable="true"
+
+
+                />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/relative_layout_fan_speed"
+            app:layout_constraintTop_toBottomOf="@id/text_input_layout_fan_speed"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            >
+
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_fan_off"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_toEndOf="@id/btn_set_fan_speed"
+                android:layout_marginStart="8dp"
+                android:text="Fan Off"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+
+                />
+
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_set_fan_speed"
+                android:layout_width="185dp"
+                android:layout_height="60dp"
+                android:text="Set Fan Speed"
+                android:layout_alignParentStart="true"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                />
+    </RelativeLayout>
 
 
 

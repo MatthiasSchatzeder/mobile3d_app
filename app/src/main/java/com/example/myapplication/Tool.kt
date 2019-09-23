@@ -36,7 +36,7 @@ class Tool() : Fragment() {
         view.tool_dropdown.setAdapter(adapter)
 
         var tool: Any? = null
-        view.tool_dropdown.setOnItemClickListener(AdapterView.OnItemClickListener() { adapterView: AdapterView<*>, view1: View, i: Int, l: Long ->
+        view.tool_dropdown.setOnItemClickListener(AdapterView.OnItemClickListener() { adapterView: AdapterView<*>, _: View, i: Int, _: Long ->
             tool = adapterView.getItemAtPosition(i)
             //Toast.makeText(context, "$tool", Toast.LENGTH_SHORT).show()
         })
@@ -47,7 +47,20 @@ class Tool() : Fragment() {
             Toast.makeText(context, "extruding $tool for " + distance + "mm", Toast.LENGTH_SHORT).show()
         }
 
+        //checks if the text input fields have focus and if they do not have focus it hides the keyboard
         view.text_input_distance.setOnFocusChangeListener { view, hasFocus ->
+            if(!hasFocus){
+                hideKeyboard(view)
+            }
+        }
+
+        view.text_input_nozzle_temperature.setOnFocusChangeListener { view, hasFocus ->
+            if(!hasFocus){
+                hideKeyboard(view)
+            }
+        }
+
+        view.text_input_bed_temperature.setOnFocusChangeListener { view, hasFocus ->
             if(!hasFocus){
                 hideKeyboard(view)
             }

@@ -8,13 +8,16 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 
 class FragmentPagerAdapter(fm: FragmentManager, lc: Lifecycle) : FragmentStateAdapter(fm, lc) {
 
-
     var fragmentList = listOf<Fragment>()
 
-
-    override fun getItem(position: Int): Fragment {
+    override fun createFragment(position: Int): Fragment {
         return fragmentList[position]
     }
+
+    //deprecated method (new above)
+    /*override fun getItem(position: Int): Fragment {
+        return fragmentList[position]
+    }*/
 
     override fun getItemCount(): Int {
         return fragmentList.count()
