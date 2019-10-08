@@ -47,46 +47,8 @@ class ControlActivity : AppCompatActivity() {
          * listens to clicks of the Navigation Icon
          */
         toolbar.setNavigationOnClickListener(View.OnClickListener {
-            var drawerLayout = drawer_layout
-            drawerLayout.openDrawer(GravityCompat.START)
+            finish();
         })
-
-        var navigationView = navigation_view
-        /**
-         * listens to clicks on the Navigation Viewer items
-         */
-        navigationView.setNavigationItemSelectedListener { item: MenuItem ->
-            if(item.itemId == R.id.item_control){
-
-                var drawerLayout = drawer_layout
-                drawerLayout.closeDrawers()
-
-                return@setNavigationItemSelectedListener true
-            }
-            else if(item.itemId == R.id.item_printer){
-
-                var drawerLayout = drawer_layout
-                drawerLayout.closeDrawers()
-
-                finish()
-                //val intent = Intent(this, MainActivity::class.java)
-                //startActivity(intent)
-
-                return@setNavigationItemSelectedListener true
-            }
-            else if(item.itemId == R.id.item_settings){
-                var drawerLayout = drawer_layout
-                drawerLayout.closeDrawers()
-
-                val intent = Intent(this, SettingsActivity::class.java)
-                startActivity(intent)
-
-                return@setNavigationItemSelectedListener true
-            }
-
-            return@setNavigationItemSelectedListener false
-        }
-
     }
 
 

@@ -30,21 +30,10 @@ class Tool() : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_tool, container, false)
 
-        view.tool_dropdown.keyListener = null   //makes the textfield non editable (you can only select from the given items)
-
-        val adapter: ArrayAdapter<String> = ArrayAdapter(context as Context, R.layout.tool_dropdown_item, toolList)
-        view.tool_dropdown.setAdapter(adapter)
-
-        var tool: Any? = null
-        view.tool_dropdown.setOnItemClickListener(AdapterView.OnItemClickListener() { adapterView: AdapterView<*>, _: View, i: Int, _: Long ->
-            tool = adapterView.getItemAtPosition(i)
-            //Toast.makeText(context, "$tool", Toast.LENGTH_SHORT).show()
-        })
-
         view.btn_extrude.setOnClickListener {
             val distance: Int = text_input_distance.text.toString().toInt()
 
-            Toast.makeText(context, "extruding $tool for " + distance + "mm", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "extruding " + distance + "mm", Toast.LENGTH_SHORT).show()
         }
 
         //checks if the text input fields have focus and if they do not have focus it hides the keyboard

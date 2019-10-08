@@ -21,8 +21,8 @@ class SettingsActivity : AppCompatActivity() {
             finish()
         })
 
-        var notification_switch = switch_notifications
 
+        var notification_switch = switch_notifications
 
         notification_switch.setOnClickListener(){
             if(notification_switch.isChecked){
@@ -32,7 +32,6 @@ class SettingsActivity : AppCompatActivity() {
                 Toast.makeText(this, "Notifications OFF", Toast.LENGTH_SHORT).show()
             }
         }
-
     }
 
 
