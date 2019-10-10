@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -22,15 +23,20 @@ class SettingsActivity : AppCompatActivity() {
         })
 
 
-        var notification_switch = switch_notifications
+        var notificationSwitch = switch_notifications
 
-        notification_switch.setOnClickListener(){
-            if(notification_switch.isChecked){
+        notificationSwitch.setOnClickListener {
+            if(notificationSwitch.isChecked){
                 Toast.makeText(this, "Notifications ON", Toast.LENGTH_SHORT).show()
             }
             else{
                 Toast.makeText(this, "Notifications OFF", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        btn_SetupWifi.setOnClickListener {
+            val intent = Intent(this, BluetoothLeActivity::class.java)
+            startActivity(intent)
         }
     }
 

@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         var navigationView = navigation_view
         /**
-         * listens to clicks on the Navigation Viewer items
+         * listens to clicks on the Navigation Viewer (sidebar) items
          */
         navigationView.setNavigationItemSelectedListener { item: MenuItem ->
             if (item.itemId == R.id.item_control) {
