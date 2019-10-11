@@ -19,7 +19,6 @@ class ControlActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_control)
 
-
         var adapter = FragmentPagerAdapter(supportFragmentManager, lifecycle)
 
         adapter.addFragment(Axes())

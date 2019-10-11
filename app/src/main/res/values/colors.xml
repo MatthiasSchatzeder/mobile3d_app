@@ -6,4 +6,5 @@
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBlack">#000000</color>
     <color name="colorBtn">#EDEDED</color>
+    <color name="red">#FF0000</color>
 </resources>

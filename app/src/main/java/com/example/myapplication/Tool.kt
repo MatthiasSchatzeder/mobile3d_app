@@ -23,10 +23,6 @@ import androidx.core.content.ContextCompat.getSystemService
 
 class Tool() : Fragment() {
 
-
-    val toolList = listOf<String>("E 1", "E 2", "E 3")
-
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_tool, container, false)
 
@@ -36,20 +32,22 @@ class Tool() : Fragment() {
             Toast.makeText(context, "extruding " + distance + "mm", Toast.LENGTH_SHORT).show()
         }
 
-        //checks if the text input fields have focus and if they do not have focus it hides the keyboard
-        view.text_input_distance.setOnFocusChangeListener { view, hasFocus ->
+        /**
+         * checks if the text input fields have focus and if they do not have focus it hides the keyboard
+         */
+        view.text_input_distance.setOnFocusChangeListener { _, hasFocus ->
             if(!hasFocus){
                 hideKeyboard(view)
             }
         }
 
-        view.text_input_nozzle_temperature.setOnFocusChangeListener { view, hasFocus ->
+        view.text_input_nozzle_temperature.setOnFocusChangeListener { _, hasFocus ->
             if(!hasFocus){
                 hideKeyboard(view)
             }
         }
 
-        view.text_input_bed_temperature.setOnFocusChangeListener { view, hasFocus ->
+        view.text_input_bed_temperature.setOnFocusChangeListener { _, hasFocus ->
             if(!hasFocus){
                 hideKeyboard(view)
             }
@@ -61,10 +59,8 @@ class Tool() : Fragment() {
 
     //function that hides the keyboard
     fun hideKeyboard(view: View){
-        var inputMethodManager: InputMethodManager = context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputMethodManager: InputMethodManager = context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
-
-
 
 }

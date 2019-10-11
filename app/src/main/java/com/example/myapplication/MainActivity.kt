@@ -2,6 +2,7 @@ package com.example.myapplication
 
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -12,11 +13,19 @@ import androidx.core.view.GravityCompat
 import kotlinx.android.synthetic.main.activity_main.*
 
 
+
 class MainActivity : AppCompatActivity() {
+
+    val color_red = "#ff0000"
+    val color_green = "#34eb34"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        //page test
+        text_view_satus_message.text = "offline"
+        text_view_satus_message.setTextColor(Color.parseColor(color_red))
 
         //init toolbar
         var toolbar = toolbar
@@ -24,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
 
         /**
-         * listens to clicks of the Navigation Icon
+         * listens to clicks of the Navigation Icon on the toolbar
          */
         toolbar.setNavigationOnClickListener(View.OnClickListener {
             var drawerLayout = drawer_layout
@@ -65,15 +74,19 @@ class MainActivity : AppCompatActivity() {
 
             return@setNavigationItemSelectedListener false
         }
-    }
+    }//onCreate
 
-
+    /**
+     * initializes sidebar menu layout
+     */
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
         return true
     }
 
-
+    /**
+     *listens to clicks on the right (more) icon on the toolbar
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         if (item.itemId == R.id.action_menu) {
