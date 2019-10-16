@@ -18,7 +18,7 @@ class General : Fragment() {
         val view = inflater.inflate(R.layout.fragment_general, container, false)
 
         //checks if the text input fields have focus and if they do not have focus it hides the keyboard
-        view.text_input_fan_speed.setOnFocusChangeListener { view, hasFocus ->
+        view.text_input_fan_speed.setOnFocusChangeListener { _, hasFocus ->
             if(!hasFocus){
                 hideKeyboard(view)
             }
