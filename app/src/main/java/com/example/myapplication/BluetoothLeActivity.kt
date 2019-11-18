@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
@@ -13,11 +14,15 @@ import kotlinx.android.synthetic.main.activity_settings.*
 import androidx.core.os.HandlerCompat.postDelayed
 import java.lang.Compiler.enable
 import android.bluetooth.le.BluetoothLeScanner
+import android.bluetooth.le.ScanCallback
+import android.bluetooth.le.ScanFilter
+import android.bluetooth.le.ScanSettings
 import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
-
+import android.os.ParcelUuid
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 private const val SCAN_PERIOD: Long = 10000
@@ -27,11 +32,14 @@ class BluetoothLeActivity : AppCompatActivity() {
     //variables
     private val handler: Handler = Handler()
     private var currentlyScanning: Boolean = false
-    var filters = ArrayList<String>()
+
+    var filters = ArrayList<ScanFilter>()
+
+    var devices = ArrayList<BluetoothDevice>()
 
 
     /**
-     * Bluetooth LE Setup
+     * get bluetooth adapter
      */
     private val bluetoothAdapter: BluetoothAdapter? by lazy(LazyThreadSafetyMode.NONE) {
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
@@ -52,8 +60,17 @@ class BluetoothLeActivity : AppCompatActivity() {
         })
         //_toolbar
 
+
+        /**
+         * initializing scan filters
+         */
+        var scanFilter = ScanFilter.Builder().setServiceUuid(ParcelUuid.fromString("e081fec0-f757-4449-b9c9-bfa83133f7fc")).build()
+        filters.add(scanFilter)
+
+
         /**
          * enable Bluetooth Intent if not already enabled
+         *
          * !! = non null asserted call
          */
         if(!bluetoothAdapter!!.isEnabled){
@@ -82,10 +99,9 @@ class BluetoothLeActivity : AppCompatActivity() {
     }
 
 
-
     /**
      * scan for BLE devices
-     * TODO implement LeScanCallback
+     * TODO implement myLeScanCallback
      */
     private fun scanLeDevicec(enable: Boolean){
 
@@ -96,18 +112,24 @@ class BluetoothLeActivity : AppCompatActivity() {
             handler.postDelayed({
                 currentlyScanning = false
 
-                //bluetoothLeScanner.stopScan(mLeScanCallback)
+                bluetoothLeScanner.stopScan(myLeScanCallback)
             }, SCAN_PERIOD)
 
             currentlyScanning = true
-            //bluetoothLeScanner.startScan(mLeScanCallback)
+            bluetoothLeScanner.startScan(filters, ScanSettings.Builder().setScanMode(ScanSettings.CALLBACK_TYPE_ALL_MATCHES).build(), myLeScanCallback)
         } else {
             currentlyScanning = false
-            //bluetoothLeScanner.stopScan(mLeScanCallback)
+            bluetoothLeScanner.stopScan(myLeScanCallback)
         }
-
-
     }
+
+    //not working
+    private val myLeScanCallback = BluetoothAdapter.LeScanCallback{device, _, _ ->
+        runOnUiThread{
+            devices.add(device)
+        }
+    }
+
 
 }
 
