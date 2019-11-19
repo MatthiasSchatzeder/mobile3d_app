@@ -26,4 +26,15 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/appbar_layout"
+            app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/listView_bluetoothLeDevice"
+            android:divider="@color/colorBlack"
+            >
+
+    </ListView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

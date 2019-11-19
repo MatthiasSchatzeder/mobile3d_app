@@ -4,6 +4,7 @@ import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import android.bluetooth.le.*
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -11,18 +12,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import kotlinx.android.synthetic.main.activity_settings.*
-import androidx.core.os.HandlerCompat.postDelayed
-import java.lang.Compiler.enable
-import android.bluetooth.le.BluetoothLeScanner
-import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanFilter
-import android.bluetooth.le.ScanSettings
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.os.ParcelUuid
-import java.util.*
 import kotlin.collections.ArrayList
+
+
 
 
 private const val SCAN_PERIOD: Long = 10000
@@ -123,11 +116,28 @@ class BluetoothLeActivity : AppCompatActivity() {
         }
     }
 
-    //not working
+    /*not working
     private val myLeScanCallback = BluetoothAdapter.LeScanCallback{device, _, _ ->
         runOnUiThread{
             devices.add(device)
         }
+    }*/
+
+    private val myLeScanCallback = object : ScanCallback() {
+        override fun onScanResult(callbackType: Int, result: ScanResult) {
+            devices.add(result.device)
+        }
+
+        /*
+        override fun onBatchScanResults(results: List<ScanResult>) {
+            super.onBatchScanResults(results)
+        }
+
+        override fun onScanFailed(errorCode: Int) {
+            super.onScanFailed(errorCode)
+        }
+
+         */
     }
 
 
