@@ -4,3 +4,16 @@ If you want to scan for only specific types of peripherals, you can instead call
 
 
 
+19.11.2019:
+
+- Callback function added
+- list item added
+
+
+
+
+
+20.11.2019
+
+- arrayListAdapter added
+- 

@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -10,17 +11,18 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.view.View
-import kotlinx.android.synthetic.main.activity_settings.*
 import android.os.ParcelUuid
+import android.view.View
+import android.widget.ArrayAdapter
+import kotlinx.android.synthetic.main.activity_bluetooth_le.*
+import kotlinx.android.synthetic.main.activity_settings.toolbar
 import kotlin.collections.ArrayList
-
 
 
 
 private const val SCAN_PERIOD: Long = 10000
 
-class BluetoothLeActivity : AppCompatActivity() {
+abstract class BluetoothLeActivity(var arrayAdapter: ArrayAdapter<String>) : AppCompatActivity() {
 
     //variables
     private val handler: Handler = Handler()
@@ -29,6 +31,7 @@ class BluetoothLeActivity : AppCompatActivity() {
     var filters = ArrayList<ScanFilter>()
 
     var devices = ArrayList<BluetoothDevice>()
+    var deviceNames = ArrayList<String>()
 
 
     /**
@@ -39,6 +42,8 @@ class BluetoothLeActivity : AppCompatActivity() {
         bluetoothManager.adapter
     }
 
+
+    @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bluetooth_le)
@@ -52,7 +57,6 @@ class BluetoothLeActivity : AppCompatActivity() {
             finish()
         })
         //_toolbar
-
 
         /**
          * initializing scan filters
@@ -70,6 +74,16 @@ class BluetoothLeActivity : AppCompatActivity() {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             startActivityForResult(enableBtIntent, 1)
         }
+
+        //testting
+        deviceNames.add("Ble Device 1")
+        deviceNames.add("Ble Device 2")
+        deviceNames.add("Ble Device 3")
+        deviceNames.add("Ble Device 4")
+        //testing end
+        arrayAdapter = ArrayAdapter<String>(this, R.id.listView_bluetoothLeDevices, R.id.textView_BleDeviceName, deviceNames)
+        listView_bluetoothLeDevices.adapter = arrayAdapter
+
 
     }
 
@@ -93,10 +107,10 @@ class BluetoothLeActivity : AppCompatActivity() {
 
 
     /**
+     * function:
      * scan for BLE devices
-     * TODO implement myLeScanCallback
      */
-    private fun scanLeDevicec(enable: Boolean){
+    private fun scanLeDevices(enable: Boolean){
 
         val bluetoothLeScanner = bluetoothAdapter!!.bluetoothLeScanner
 
@@ -116,16 +130,25 @@ class BluetoothLeActivity : AppCompatActivity() {
         }
     }
 
-    /*not working
+
+    //not working
+    //might be removable
+    /*
     private val myLeScanCallback = BluetoothAdapter.LeScanCallback{device, _, _ ->
         runOnUiThread{
             devices.add(device)
         }
     }*/
 
+
+    /**
+     * Callback from BLEScanner
+     */
     private val myLeScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             devices.add(result.device)
+            deviceNames.add(result.device.name)
+            arrayAdapter.notifyDataSetChanged()
         }
 
         /*
