@@ -1,28 +1,40 @@
 package com.example.myapplication
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
-import android.bluetooth.le.*
+import android.bluetooth.le.ScanCallback
+import android.bluetooth.le.ScanFilter
+import android.bluetooth.le.ScanResult
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.ParcelUuid
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_bluetooth_le.*
 import kotlinx.android.synthetic.main.activity_settings.toolbar
-import kotlin.collections.ArrayList
-
+import android.Manifest
+import android.bluetooth.le.ScanSettings
+import android.util.Log
+import java.lang.IllegalStateException
+import java.lang.NullPointerException
+import java.util.logging.LogManager
 
 
 private const val SCAN_PERIOD: Long = 10000
+private const val ENABLE_BT_REQUEST_CODE = 1
+private const val MY_REQUEST_PERMISSON_CODE = 111
 
-abstract class BluetoothLeActivity(var arrayAdapter: ArrayAdapter<String>) : AppCompatActivity() {
+class BluetoothLeActivity: AppCompatActivity() {
+
 
     //variables
     private val handler: Handler = Handler()
@@ -34,29 +46,31 @@ abstract class BluetoothLeActivity(var arrayAdapter: ArrayAdapter<String>) : App
     var deviceNames = ArrayList<String>()
 
 
+
+
     /**
-     * get bluetooth adapter
+     * get BLE Adapter
      */
-    private val bluetoothAdapter: BluetoothAdapter? by lazy(LazyThreadSafetyMode.NONE) {
-        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        bluetoothManager.adapter
-    }
+    private val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()!!
 
 
-    @SuppressLint("ResourceType")
+    /**
+     * OnCreate
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bluetooth_le)
 
-        //toolbar
+        /**
+         * toolbar setup
+         */
         var toolbar = toolbar
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Wifi Setup"
 
-        toolbar.setNavigationOnClickListener(View.OnClickListener {
+        toolbar.setNavigationOnClickListener{
             finish()
-        })
-        //_toolbar
+        }
 
         /**
          * initializing scan filters
@@ -70,39 +84,43 @@ abstract class BluetoothLeActivity(var arrayAdapter: ArrayAdapter<String>) : App
          *
          * !! = non null asserted call
          */
-        if(!bluetoothAdapter!!.isEnabled){
+        if(!bluetoothAdapter.isEnabled){
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            startActivityForResult(enableBtIntent, 1)
+            startActivityForResult(enableBtIntent, ENABLE_BT_REQUEST_CODE)
         }
 
+        checkPermission()
+
+        /*
         //testting
         deviceNames.add("Ble Device 1")
         deviceNames.add("Ble Device 2")
         deviceNames.add("Ble Device 3")
         deviceNames.add("Ble Device 4")
         //testing end
-        arrayAdapter = ArrayAdapter<String>(this, R.id.listView_bluetoothLeDevices, R.id.textView_BleDeviceName, deviceNames)
+         */
+
+        var arrayAdapter = ArrayAdapter<String>(this, R.layout.bluetooth_le_device_list_item, deviceNames)
         listView_bluetoothLeDevices.adapter = arrayAdapter
 
+        /**
+         * error causes app crashing
+         * reason: no location permission
+         */
+        //scanLeDevices(true)
 
-    }
+    } //OnCreate
 
     /**
      * gets result from BluetoothAdapter.ACTION_REQUEST_ENABLE
      * if the user declined BT enable the activity calls finish()
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if(requestCode == 1){
-            if(resultCode == Activity.RESULT_CANCELED){
-                finish()
-            }
-            else{
-                super.onActivityResult(requestCode, resultCode, data)
-            }
+        if(requestCode == ENABLE_BT_REQUEST_CODE && resultCode == Activity.RESULT_CANCELED){
+            finish()
         }
-        else{
-            //super.onActivityResult(requestCode, resultCode, data)
-        }
+        super.onActivityResult(requestCode, resultCode, data)
+
     }
 
 
@@ -112,8 +130,7 @@ abstract class BluetoothLeActivity(var arrayAdapter: ArrayAdapter<String>) : App
      */
     private fun scanLeDevices(enable: Boolean){
 
-        val bluetoothLeScanner = bluetoothAdapter!!.bluetoothLeScanner
-
+        val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
         if (enable) {
             // Stops scanning after a pre-defined scan period.
             handler.postDelayed({
@@ -123,22 +140,13 @@ abstract class BluetoothLeActivity(var arrayAdapter: ArrayAdapter<String>) : App
             }, SCAN_PERIOD)
 
             currentlyScanning = true
-            bluetoothLeScanner.startScan(filters, ScanSettings.Builder().setScanMode(ScanSettings.CALLBACK_TYPE_ALL_MATCHES).build(), myLeScanCallback)
+            //bluetoothLeScanner.startScan(filters, ScanSettings.Builder().setScanMode(ScanSettings.CALLBACK_TYPE_ALL_MATCHES).build(), myLeScanCallback)
+            bluetoothLeScanner.startScan(myLeScanCallback)
         } else {
             currentlyScanning = false
             bluetoothLeScanner.stopScan(myLeScanCallback)
         }
     }
-
-
-    //not working
-    //might be removable
-    /*
-    private val myLeScanCallback = BluetoothAdapter.LeScanCallback{device, _, _ ->
-        runOnUiThread{
-            devices.add(device)
-        }
-    }*/
 
 
     /**
@@ -148,7 +156,7 @@ abstract class BluetoothLeActivity(var arrayAdapter: ArrayAdapter<String>) : App
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             devices.add(result.device)
             deviceNames.add(result.device.name)
-            arrayAdapter.notifyDataSetChanged()
+            //arrayAdapter.notifyDataSetChanged()
         }
 
         /*
@@ -161,6 +169,26 @@ abstract class BluetoothLeActivity(var arrayAdapter: ArrayAdapter<String>) : App
         }
 
          */
+    }
+
+
+    private fun checkPermission(){
+        val hasForegroundLocationPermission = ActivityCompat.checkSelfPermission(this,
+            Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        if (hasForegroundLocationPermission) {
+            val hasBackgroundLocationPermission = ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+            if (hasBackgroundLocationPermission) {
+                // handle location update
+            } else {
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), MY_REQUEST_PERMISSON_CODE)
+            }
+        } else {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION), MY_REQUEST_PERMISSON_CODE)
+        }
     }
 
 
