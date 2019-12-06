@@ -16,4 +16,9 @@ If you want to scan for only specific types of peripherals, you can instead call
 20.11.2019
 
 - arrayListAdapter added
+
+
+
+6.12.2019
+
 - 

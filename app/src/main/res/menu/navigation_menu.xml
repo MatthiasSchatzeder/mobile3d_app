@@ -7,8 +7,6 @@
                 android:id="@+id/item_printer"
                 android:icon="@drawable/ic_home"
         />
-        <!-- <div>Icon made by <a href="https://www.flaticon.com/authors/wichaiwi" title="Wichai.wi">Wichai.wi</a> from <a href="https://www.flaticon.com/"             title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/"             title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div> -->
-
         <item
                 android:title="Control"
                 android:id="@+id/item_control"
@@ -22,5 +20,10 @@
                 android:id="@+id/item_settings"
                 android:icon="@drawable/ic_settings"
         />
+        <item
+                android:title="Setup Wifi"
+                android:id="@+id/item_wifi"
+                android:icon="@drawable/ic_wifi"
+                />
     </group>
 </menu>

@@ -1,8 +1,12 @@
 package com.example.myapplication
 
 
+import android.Manifest
+import android.app.AlertDialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -30,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         //init toolbar
         var toolbar = toolbar
         setSupportActionBar(toolbar)
+
 
 
         /**
@@ -70,6 +75,14 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
 
                 return@setNavigationItemSelectedListener true
+            } else if (item.itemId == R.id.item_wifi) {
+                var drawerLayout = drawer_layout
+                drawerLayout.closeDrawers()
+
+                val intent = Intent(this, BluetoothLeActivity::class.java)
+                startActivity(intent)
+
+                return@setNavigationItemSelectedListener true
             }
 
             return@setNavigationItemSelectedListener false
@@ -97,6 +110,5 @@ class MainActivity : AppCompatActivity() {
 
         return super.onOptionsItemSelected(item)
     }
-
 
 }
