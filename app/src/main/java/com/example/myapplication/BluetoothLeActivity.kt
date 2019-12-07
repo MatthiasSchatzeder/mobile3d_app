@@ -14,13 +14,16 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.ParcelUuid
+import android.provider.Settings
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import kotlinx.android.synthetic.main.activity_bluetooth_le.*
 import kotlinx.android.synthetic.main.activity_settings.toolbar
 
@@ -32,6 +35,9 @@ private const val MY_REQUEST_BACKGROUND_LOCATION_PERMISSION = 11
 private const val PERMISSION_REQUEST_FINE_LOCATION = 21
 private const val PERMISSION_REQUEST_BACKGROUND_LOCATION = 22
 
+private const val REQUEST_CODE_FOREGROUND = 30
+private const val REQUEST_CODE_BACKGROUND = 31
+private const val REQUEST_CODE_BLE_LOCATION = 32
 
 class BluetoothLeActivity: AppCompatActivity() {
 
@@ -45,12 +51,26 @@ class BluetoothLeActivity: AppCompatActivity() {
     var devices = ArrayList<BluetoothDevice>()
     var deviceNames = ArrayList<String>()
 
+    var arrayAdapter: ArrayAdapter<String>? = null
+
+    override fun onStop() {
+        if(currentlyScanning){
+            scanLeDevices(false)
+        }
+
+        super.onStop()
+    }
 
 
     /**
      * declare BT adapter
      */
-    private var bluetoothAdapter: BluetoothAdapter? = null //BluetoothAdapter.getDefaultAdapter()
+    private var bluetoothAdapter: BluetoothAdapter? = null
+
+    /**
+     * declare location Manager
+     */
+    private var locationManager: LocationManager? = null
 
 
     /**
@@ -66,6 +86,7 @@ class BluetoothLeActivity: AppCompatActivity() {
         var toolbar = toolbar
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Wifi Setup"
+        supportActionBar?.subtitle = "Scan and Select your Device"
 
         toolbar.setNavigationOnClickListener{
             finish()
@@ -84,7 +105,7 @@ class BluetoothLeActivity: AppCompatActivity() {
         val bluetoothManager: BluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
 
-
+        locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         /*
         //testting
@@ -93,35 +114,48 @@ class BluetoothLeActivity: AppCompatActivity() {
         deviceNames.add("Ble Device 3")
         deviceNames.add("Ble Device 4")
         //testing end
+
          */
+
 
         /**
          * link ListView and array adapter
          */
-        var arrayAdapter = ArrayAdapter<String>(this, R.layout.bluetooth_le_device_list_item, deviceNames)
+        arrayAdapter = ArrayAdapter<String>(this, R.layout.bluetooth_le_device_list_item, deviceNames)
         listView_bluetoothLeDevices.adapter = arrayAdapter
 
         /**
          * btn to start scan method
          */
         btn_scanDevices.setOnClickListener{
-            if(currentlyScanning){
-                Toast.makeText(this, "already scanning ...", Toast.LENGTH_SHORT).show()
+            if (locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER)!!) {
+                if (currentlyScanning) {
+                    Toast.makeText(this, "already scanning ...", Toast.LENGTH_SHORT).show()
+                } else {
+                    scanLeDevices(true)
+                }
             }else{
-                scanLeDevices(true)
+                //Toast.makeText(this, "Scanning does not work without GPS enabled", Toast.LENGTH_LONG).show()
+                /**
+                 * enable GPS
+                 */
+                checkGPS()
             }
 
-        }
+
+        } //btn listener
+
+        /**
+         * check permission function call
+         */
+        checkPermission()
 
         /**
          * function call to check for BT
          */
         checkBT()
 
-        /**
-         * check permission function call
-         */
-        checkPermission()
+
 
     } //OnCreate
 
@@ -135,7 +169,19 @@ class BluetoothLeActivity: AppCompatActivity() {
         }
     }
 
-
+    private fun checkGPS(){
+        if (!locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER)!!) {
+        var builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setMessage("GPS is disabled!\nScanning for devices does not work without location tracking enabled")
+        .setCancelable(false)
+        .setPositiveButton("OK") { dialogInterface: DialogInterface, i: Int ->
+            var intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent)
+        }
+        val alert: AlertDialog= builder.create()
+        alert.show()
+    }
+    }
 
     /**
      * gets result from BluetoothAdapter.ACTION_REQUEST_ENABLE
@@ -179,10 +225,15 @@ class BluetoothLeActivity: AppCompatActivity() {
      */
     private val myLeScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
-            devices.add(result.device)
-            deviceNames.add(result.device.name)
-            Toast.makeText(this@BluetoothLeActivity, "Device found", Toast.LENGTH_SHORT).show()
-            //arrayAdapter.notifyDataSetChanged()
+            if(result.device != null && result.device.name != null){
+                if(!devices.contains(result.device)){
+                    devices.add(result.device)
+                    deviceNames.add(result.device.name)
+                    arrayAdapter?.notifyDataSetChanged()
+                }
+            }
+            Toast.makeText(this@BluetoothLeActivity, "Device found: (" + deviceNames.size + ") - "+ result.device.name, Toast.LENGTH_SHORT).show()
+
         }
         /*
         override fun onBatchScanResults(results: List<ScanResult>) {
@@ -199,59 +250,40 @@ class BluetoothLeActivity: AppCompatActivity() {
     }
 
     /**
-     * Android Q check (and enable if not already done) location permission needed for BLE
-     * source: https://stackoverflow.com/questions/32708374/bluetooth-le-scan-doesnt-work-on-android-m-in-the-background
+     * Android Q check (and enable if not already done) location permissions needed for BLE
+     * source: https://medium.com/google-developer-experts/exploring-android-q-location-permissions-64d312b0e2e1
      */
-    @TargetApi(23)
     private fun checkPermission(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-                if (this.checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-                    if (this.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
-                        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-                        builder.setTitle("This app needs background location access")
-                        builder.setMessage("Please grant location access so this app can detect beacons in the background.")
-                        builder.setPositiveButton(android.R.string.ok, null)
-                        builder.setOnDismissListener{
-                            requestPermissions(
-                                Array(5){ Manifest.permission.ACCESS_BACKGROUND_LOCATION},
-                                MY_REQUEST_BACKGROUND_LOCATION_PERMISSION)
-                        }
-                        builder.show()
-                    }
-                    else {
-                        val  builder: AlertDialog.Builder = AlertDialog.Builder(this)
-                        builder.setTitle("Functionality limited")
-                        builder.setMessage("Since background location access has not been granted, this app will not be able to discover beacons in the background.  Please go to Settings -> Applications -> Permissions and grant background location access to this app.")
-                        builder.setPositiveButton(android.R.string.ok, null)
-                        builder.setOnDismissListener{
-                            finish()
-                        }
-                        builder.show()
-                    }
+        val hasLocationPermission = ActivityCompat.checkSelfPermission(this,
+            Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
+        if (hasLocationPermission) {
+            val hasBackgroundLocationPermission = ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+            if (hasBackgroundLocationPermission) {
+                val hasFineLocationPermission = ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                if(hasFineLocationPermission){
+
+                }else{
+                    ActivityCompat.requestPermissions(this,
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE_BLE_LOCATION)
                 }
+
             } else {
-                if (!this.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    requestPermissions(Array(5){ Manifest.permission.ACCESS_FINE_LOCATION; Manifest.permission.ACCESS_BACKGROUND_LOCATION},
-                        MY_REQUEST_FINE_LOCATION_PERMISSION)
-                }
-                else {
-                    val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-                    builder.setTitle("Functionality limited")
-                    builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons.  Please go to Settings -> Applications -> Permissions and grant location access to this app.")
-                    builder.setPositiveButton(android.R.string.ok, null)
-                    builder.setOnDismissListener {
-                        finish()
-                    }
-                    builder.show()
-                }
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE_BLE_LOCATION)
             }
-        }
-    } //fun
 
+        } else {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE_BLE_LOCATION)
+        }
+    }
 
 } //class
 
