@@ -2,23 +2,17 @@ If you want to scan for only specific types of peripherals, you can instead call
 
 
 
+# Nymea Network Manager
 
+## Raspi
 
-19.11.2019:
+list all connections of the network manager:
 
-- Callback function added
-- list item added
-
-
-
-
-
-20.11.2019
-
-- arrayListAdapter added
+`nmcli connection`
 
 
 
-6.12.2019
+delete connection with name:
 
-- 
+`nmcli connection delete <connection name>`
+

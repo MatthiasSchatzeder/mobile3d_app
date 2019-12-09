@@ -27,25 +27,33 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <ListView
+            android:id="@+id/listView_bluetoothLeDevices"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/appbar_layout"
-            app:layout_constraintStart_toStartOf="parent"
-            android:id="@+id/listView_bluetoothLeDevices"
             android:divider="@color/colorBlack"
+            app:layout_constraintBottom_toTopOf="@+id/btn_scanDevices"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/appbar_layout"
+            app:layout_constraintVertical_bias="0.0"
+            android:footerDividersEnabled="true"
+            android:headerDividersEnabled="true"
+            android:dividerHeight="1dp"
+            android:minHeight="100dp"
             >
 
     </ListView>
 
     <com.google.android.material.button.MaterialButton
-            android:text="Scan for Devices"
             android:id="@+id/btn_scanDevices"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:height="@dimen/toolbar_height"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Scan for Devices"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:height="@dimen/toolbar_height"
-            >
+            app:cornerRadius="0dp">
 
     </com.google.android.material.button.MaterialButton>
 

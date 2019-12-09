@@ -1,7 +1,6 @@
 package com.example.myapplication
 
 import android.Manifest
-import android.annotation.TargetApi
 import android.app.Activity
 import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
@@ -15,7 +14,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.ParcelUuid
@@ -51,8 +49,16 @@ class BluetoothLeActivity: AppCompatActivity() {
     var devices = ArrayList<BluetoothDevice>()
     var deviceNames = ArrayList<String>()
 
+    //declare array adapter
     var arrayAdapter: ArrayAdapter<String>? = null
+    //declare bluetooth adapter
+    private var bluetoothAdapter: BluetoothAdapter? = null
+    //declare location manager
+    private var locationManager: LocationManager? = null
 
+    /**
+     * stop scanning if the user leaves the scanning screen
+     */
     override fun onStop() {
         if(currentlyScanning){
             scanLeDevices(false)
@@ -60,17 +66,6 @@ class BluetoothLeActivity: AppCompatActivity() {
 
         super.onStop()
     }
-
-
-    /**
-     * declare BT adapter
-     */
-    private var bluetoothAdapter: BluetoothAdapter? = null
-
-    /**
-     * declare location Manager
-     */
-    private var locationManager: LocationManager? = null
 
 
     /**
@@ -98,31 +93,31 @@ class BluetoothLeActivity: AppCompatActivity() {
         var scanFilter = ScanFilter.Builder().setServiceUuid(ParcelUuid.fromString("e081fec0-f757-4449-b9c9-bfa83133f7fc")).build()
         filters.add(scanFilter)
 
-
         /**
          * get BT manager and BT adapter
+         * used to enable bluetooth, get BLE scanner
          */
         val bluetoothManager: BluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
 
-        locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
-        /*
-        //testting
-        deviceNames.add("Ble Device 1")
-        deviceNames.add("Ble Device 2")
-        deviceNames.add("Ble Device 3")
-        deviceNames.add("Ble Device 4")
-        //testing end
-
+        /**
+         * get location manager
+         * used to check if GPS is enabled
          */
-
+        locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         /**
          * link ListView and array adapter
          */
         arrayAdapter = ArrayAdapter<String>(this, R.layout.bluetooth_le_device_list_item, deviceNames)
         listView_bluetoothLeDevices.adapter = arrayAdapter
+
+        /**
+         * click listener on list view items
+         */
+        listView_bluetoothLeDevices.setOnItemClickListener { _, _, position, _ ->
+            Toast.makeText(this, "item nr" + position + " with name "+ devices[position].name,Toast.LENGTH_SHORT).show()
+        }
 
         /**
          * btn to start scan method
@@ -132,17 +127,18 @@ class BluetoothLeActivity: AppCompatActivity() {
                 if (currentlyScanning) {
                     Toast.makeText(this, "already scanning ...", Toast.LENGTH_SHORT).show()
                 } else {
+                    devices.clear()
+                    deviceNames.clear()
+                    arrayAdapter?.notifyDataSetChanged()
+
                     scanLeDevices(true)
                 }
             }else{
-                //Toast.makeText(this, "Scanning does not work without GPS enabled", Toast.LENGTH_LONG).show()
                 /**
-                 * enable GPS
+                 * user request to enable GPS if not already done
                  */
-                checkGPS()
+                checkEnableGPS()
             }
-
-
         } //btn listener
 
         /**
@@ -153,34 +149,38 @@ class BluetoothLeActivity: AppCompatActivity() {
         /**
          * function call to check for BT
          */
-        checkBT()
+        checkEnableBT()
 
 
 
     } //OnCreate
 
     /**
-     * enable Bluetooth Intent if not already enabled
+     * enable Bluetooth request if not already enabled
      */
-    private fun checkBT(){
+    private fun checkEnableBT(){
         if(bluetoothAdapter == null || !bluetoothAdapter!!.isEnabled){
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             startActivityForResult(enableBtIntent, ENABLE_BT_REQUEST_CODE)
         }
     }
 
-    private fun checkGPS(){
+    /**
+     * checks if GPS is enabled
+     * if not opens an alert dialog that informs the user to enable GPS and open the gps enable page in the android settings
+     */
+    private fun checkEnableGPS(){
         if (!locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER)!!) {
         var builder: AlertDialog.Builder = AlertDialog.Builder(this)
         builder.setMessage("GPS is disabled!\nScanning for devices does not work without location tracking enabled")
         .setCancelable(false)
-        .setPositiveButton("OK") { dialogInterface: DialogInterface, i: Int ->
+        .setPositiveButton("OK") { _: DialogInterface, _: Int ->
             var intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivity(intent)
         }
-        val alert: AlertDialog= builder.create()
+        val alert: AlertDialog = builder.create()
         alert.show()
-    }
+        }
     }
 
     /**
@@ -193,7 +193,6 @@ class BluetoothLeActivity: AppCompatActivity() {
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
-
 
     /**
      * function:
@@ -208,17 +207,20 @@ class BluetoothLeActivity: AppCompatActivity() {
                 currentlyScanning = false
 
                 bluetoothLeScanner?.stopScan(myLeScanCallback)
+                Toast.makeText(this, "" + devices.size + " devices found",Toast.LENGTH_SHORT).show()
+                btn_scanDevices.text = "SCAN FOR DEVICES"
             }, SCAN_PERIOD)
 
             currentlyScanning = true
             //bluetoothLeScanner.startScan(filters, ScanSettings.Builder().setScanMode(ScanSettings.CALLBACK_TYPE_ALL_MATCHES).build(), myLeScanCallback)
             bluetoothLeScanner?.startScan(myLeScanCallback)
+
+            btn_scanDevices.text = "scanning ..."
         } else {
             currentlyScanning = false
             bluetoothLeScanner?.stopScan(myLeScanCallback)
         }
     }
-
 
     /**
      * Callback from BLEScanner
@@ -232,25 +234,25 @@ class BluetoothLeActivity: AppCompatActivity() {
                     arrayAdapter?.notifyDataSetChanged()
                 }
             }
-            Toast.makeText(this@BluetoothLeActivity, "Device found: (" + deviceNames.size + ") - "+ result.device.name, Toast.LENGTH_SHORT).show()
-
+            //debugging toast
+            //Toast.makeText(this@BluetoothLeActivity, "Device found: (" + deviceNames.size + ") - "+ result.device.name, Toast.LENGTH_SHORT).show()
         }
+        // not needed rn
         /*
         override fun onBatchScanResults(results: List<ScanResult>) {
             super.onBatchScanResults(results)
         }
 
-
         override fun onScanFailed(errorCode: Int) {
             Toast.makeText(this@BluetoothLeActivity, "Fail", Toast.LENGTH_SHORT).show()
             super.onScanFailed(errorCode)
         }
-
          */
     }
 
     /**
-     * Android Q check (and enable if not already done) location permissions needed for BLE
+     * Android permission check (get permission if not already granted) location permissions needed for BLE scanner
+     * ACCESS_BACKGROUND_LOCATION is needed for android Q (API 29)
      * source: https://medium.com/google-developer-experts/exploring-android-q-location-permissions-64d312b0e2e1
      */
     private fun checkPermission(){

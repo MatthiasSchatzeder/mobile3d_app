@@ -8,12 +8,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
-        android:gravity="center"
+        android:gravity="center_vertical"
         android:fontFamily="sans-serif-medium"
         android:text="Test BLE Device"
         android:textSize="25sp"
         android:drawableLeft="@drawable/ic_bluetooth"
         android:drawableRight="@drawable/ic_arrow_forward"
-
         />
 
