@@ -28,13 +28,7 @@ import kotlinx.android.synthetic.main.activity_settings.toolbar
 
 private const val SCAN_PERIOD: Long = 10000
 private const val ENABLE_BT_REQUEST_CODE = 1
-private const val MY_REQUEST_FINE_LOCATION_PERMISSION = 10
-private const val MY_REQUEST_BACKGROUND_LOCATION_PERMISSION = 11
-private const val PERMISSION_REQUEST_FINE_LOCATION = 21
-private const val PERMISSION_REQUEST_BACKGROUND_LOCATION = 22
 
-private const val REQUEST_CODE_FOREGROUND = 30
-private const val REQUEST_CODE_BACKGROUND = 31
 private const val REQUEST_CODE_BLE_LOCATION = 32
 
 class BluetoothLeActivity: AppCompatActivity() {
@@ -117,6 +111,12 @@ class BluetoothLeActivity: AppCompatActivity() {
          */
         listView_bluetoothLeDevices.setOnItemClickListener { _, _, position, _ ->
             Toast.makeText(this, "item nr" + position + " with name "+ devices[position].name,Toast.LENGTH_SHORT).show()
+
+            var targetBtDevice: BluetoothDevice = devices[position]
+
+            val intent = Intent(this, GattConnectActivity::class.java)
+            intent.putExtra("BleDevice", targetBtDevice)
+            startActivity(intent)
         }
 
         /**
