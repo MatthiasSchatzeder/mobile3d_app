@@ -16,3 +16,10 @@ delete connection with name:
 
 `nmcli connection delete <connection name>`
 
+
+
+
+
+**11.12.2019**
+
+- decleration der benötigten services und characteristics 

@@ -6,7 +6,25 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import kotlinx.android.synthetic.main.activity_gatt_connect.*
 import kotlinx.android.synthetic.main.activity_settings.*
+import kotlinx.android.synthetic.main.activity_settings.toolbar
+import java.util.*
+
+
+
+var bluetoothGatt: BluetoothGatt? = null
+
+/**
+ * declare bluetooth gatt service and characteristics
+ * wirelessService:     The Wireless Service allows a client to configure and monitor a wireless network connection
+ * wirelessCommander:   The connection can be controlled with the Wireless commander characteristic
+ * commanderResponse:   Each command sent will generate a response on the Commander response characteristic containing the
+ *                      error code for the command
+ */
+var wirelessService: BluetoothGattService? = null
+var wirelessCommander: BluetoothGattCharacteristic? = null
+var commanderResponse: BluetoothGattCharacteristic? = null
 
 class GattConnectActivity : AppCompatActivity() {
 
@@ -21,7 +39,6 @@ class GattConnectActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Wifi Setup"
         supportActionBar?.subtitle = "Scan and Select the Wifi to connect to"
-
         toolbar.setNavigationOnClickListener{
             finish()
         }
@@ -37,7 +54,34 @@ class GattConnectActivity : AppCompatActivity() {
          * get BluetoothGATT
          * connection Object
          */
-        val bluetoothGatt = device?.connectGatt(this, false, gattCallback)
+        bluetoothGatt = device?.connectGatt(this, false, gattCallback)
+
+        /**
+         * get GATT service and characteristics with UUID
+         */
+        wirelessService = bluetoothGatt?.getService(UUID.fromString("e081fec0-f757-4449-b9c9-bfa83133f7fc"))
+        if(wirelessService != null){
+            wirelessCommander = wirelessService?.getCharacteristic(UUID.fromString("e081fec1-f757-4449-b9c9-bfa83133f7fc"))
+            commanderResponse = wirelessService?.getCharacteristic(UUID.fromString("e081fec2-f757-4449-b9c9-bfa83133f7fc"))
+
+            if(wirelessCommander == null){
+                Toast.makeText(this, "characteristic wirelessCommander not available", Toast.LENGTH_SHORT).show()
+            }
+            if(commanderResponse == null){
+                Toast.makeText(this, "characteristic commanderResponse not available", Toast.LENGTH_SHORT).show()
+            }
+
+        }else{
+            //service not available
+            Toast.makeText(this, "service not available", Toast.LENGTH_SHORT).show()
+        } //get service and characteristics with UUID
+
+        /**
+         * btn click listener
+         */
+        btn_getNetworks.setOnClickListener{
+            getNetworks()
+        }
 
     } //onCreate
 
@@ -49,12 +93,11 @@ class GattConnectActivity : AppCompatActivity() {
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
             when(newState){
                 BluetoothProfile.STATE_CONNECTED ->{
-                    Toast.makeText(this@GattConnectActivity, "Connectted to GATT", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@GattConnectActivity, "Connected to GATT", Toast.LENGTH_SHORT).show()
                 }
                 BluetoothProfile.STATE_DISCONNECTED ->{
-
                     var builder: AlertDialog.Builder = AlertDialog.Builder(this@GattConnectActivity)
-                    builder.setMessage("There was an error with GATT connection ...")
+                    builder.setMessage("There was an error with the GATT connection ...")
                         .setCancelable(false)
                         .setPositiveButton("OK"){ _: DialogInterface, _: Int ->
                             finish()
@@ -65,13 +108,35 @@ class GattConnectActivity : AppCompatActivity() {
             }
         }
 
+        override fun onCharacteristicChanged(
+            gatt: BluetoothGatt?,
+            characteristic: BluetoothGattCharacteristic?
+        ) {
+            Toast.makeText(this@GattConnectActivity, "changed", Toast.LENGTH_SHORT).show()
+        }
 
         override fun onCharacteristicRead(
             gatt: BluetoothGatt?,
             characteristic: BluetoothGattCharacteristic?,
             status: Int
         ) {
-            super.onCharacteristicRead(gatt, characteristic, status)
+            Toast.makeText(this@GattConnectActivity, "read", Toast.LENGTH_SHORT).show()
         }
+
+        override fun onCharacteristicWrite(
+            gatt: BluetoothGatt?,
+            characteristic: BluetoothGattCharacteristic?,
+            status: Int
+        ) {
+            Toast.makeText(this@GattConnectActivity, "write", Toast.LENGTH_SHORT).show()
+        }
+    } //gattCallback
+
+    private fun getNetworks(){
+        val byteArray: ByteArray = "{\"c\": 0}\n".toByteArray() //size is 9 byte
+
+        wirelessCommander?.value = byteArray
+
+        bluetoothGatt?.writeCharacteristic(wirelessCommander)
     }
 }

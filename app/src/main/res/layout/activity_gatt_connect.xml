@@ -26,4 +26,17 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+
+
+    <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_height"
+            android:id="@+id/btn_getNetworks"
+            android:text="Get Networks"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:cornerRadius="0dp"
+            />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
