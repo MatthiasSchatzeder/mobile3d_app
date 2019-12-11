@@ -110,7 +110,11 @@ class BluetoothLeActivity: AppCompatActivity() {
          * click listener on list view items
          */
         listView_bluetoothLeDevices.setOnItemClickListener { _, _, position, _ ->
-            Toast.makeText(this, "item nr" + position + " with name "+ devices[position].name,Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "item nr" + position + " with name "+ devices[position].name,Toast.LENGTH_SHORT).show()
+
+            if(currentlyScanning){
+                scanLeDevices(false)
+            }
 
             var targetBtDevice: BluetoothDevice = devices[position]
 
@@ -207,7 +211,7 @@ class BluetoothLeActivity: AppCompatActivity() {
                 currentlyScanning = false
 
                 bluetoothLeScanner?.stopScan(myLeScanCallback)
-                Toast.makeText(this, "" + devices.size + " devices found",Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this, "" + devices.size + " devices found",Toast.LENGTH_SHORT).show()
                 btn_scanDevices.text = "SCAN FOR DEVICES"
             }, SCAN_PERIOD)
 

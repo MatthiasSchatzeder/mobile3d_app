@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.activity_gatt_connect.*
 import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.android.synthetic.main.activity_settings.toolbar
 import java.util.*
-
+import kotlin.collections.ArrayList
 
 
 var bluetoothGatt: BluetoothGatt? = null
@@ -48,40 +48,56 @@ class GattConnectActivity : AppCompatActivity() {
          */
         val device: BluetoothDevice? = intent.getParcelableExtra("BleDevice")
 
-        Toast.makeText(this, "" + device?.name, Toast.LENGTH_SHORT).show()
-
         /**
          * get BluetoothGATT
          * connection Object
          */
         bluetoothGatt = device?.connectGatt(this, false, gattCallback)
 
+        Toast.makeText(this, "" + bluetoothGatt?.device?.name, Toast.LENGTH_SHORT).show()
+
+
+
+
         /**
          * get GATT service and characteristics with UUID
          */
-        wirelessService = bluetoothGatt?.getService(UUID.fromString("e081fec0-f757-4449-b9c9-bfa83133f7fc"))
-        if(wirelessService != null){
-            wirelessCommander = wirelessService?.getCharacteristic(UUID.fromString("e081fec1-f757-4449-b9c9-bfa83133f7fc"))
-            commanderResponse = wirelessService?.getCharacteristic(UUID.fromString("e081fec2-f757-4449-b9c9-bfa83133f7fc"))
+        /*if(bluetoothGatt != null) {
+            wirelessService = bluetoothGatt?.getService(UUID.fromString("e081fec0-f757-4449-b9c9-bfa83133f7fc"))
+            if (wirelessService != null) {
+                wirelessCommander = wirelessService?.getCharacteristic(UUID.fromString("e081fec1-f757-4449-b9c9-bfa83133f7fc"))
+                commanderResponse = wirelessService?.getCharacteristic(UUID.fromString("e081fec2-f757-4449-b9c9-bfa83133f7fc"))
 
-            if(wirelessCommander == null){
-                Toast.makeText(this, "characteristic wirelessCommander not available", Toast.LENGTH_SHORT).show()
-            }
-            if(commanderResponse == null){
-                Toast.makeText(this, "characteristic commanderResponse not available", Toast.LENGTH_SHORT).show()
-            }
+                if (wirelessCommander == null) {
+                    Toast.makeText(
+                        this,
+                        "characteristic wirelessCommander not available",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                if (commanderResponse == null) {
+                    Toast.makeText(this,"characteristic commanderResponse not available",Toast.LENGTH_SHORT).show()
+                }
 
+            } else {
+                //service not available
+                Toast.makeText(this, "service not available", Toast.LENGTH_SHORT).show()
+            } //get service and characteristics with UUID
         }else{
-            //service not available
-            Toast.makeText(this, "service not available", Toast.LENGTH_SHORT).show()
-        } //get service and characteristics with UUID
+            Toast.makeText(this, "bt gatt null", Toast.LENGTH_SHORT).show()
+        }
+
+         */
 
         /**
          * btn click listener
          */
         btn_getNetworks.setOnClickListener{
-            getNetworks()
+            //getNetworks()
+            bluetoothGatt?.discoverServices()
         }
+
+
 
     } //onCreate
 
@@ -105,6 +121,14 @@ class GattConnectActivity : AppCompatActivity() {
                     val alert = builder.create()
                     alert.show()
                 }
+            }
+        }
+
+        override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
+            Toast.makeText(this@GattConnectActivity, "" + bluetoothGatt?.services?.size, Toast.LENGTH_SHORT).show()
+
+            bluetoothGatt?.services?.forEach{
+                Toast.makeText(this@GattConnectActivity, "" + it.uuid, Toast.LENGTH_SHORT).show()
             }
         }
 
