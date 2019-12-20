@@ -28,6 +28,15 @@ var commanderResponse: BluetoothGattCharacteristic? = null
 
 class GattConnectActivity : AppCompatActivity() {
 
+    override fun onStop() {
+        //bluetoothGatt?.disconnect()
+
+        //for debugging purposes
+        bluetoothGatt?.close() // -> should be called in gattCallback onConnectionStateChanged(STATE_DISCONNECTED)
+
+        super.onStop()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gatt_connect)
@@ -52,15 +61,13 @@ class GattConnectActivity : AppCompatActivity() {
          * get BluetoothGATT
          * connection Object
          */
-        bluetoothGatt = device?.connectGatt(this, false, gattCallback)
+        bluetoothGatt = device?.connectGatt(this, false, gattCallback, BluetoothDevice.TRANSPORT_LE)
 
         Toast.makeText(this, "" + bluetoothGatt?.device?.name, Toast.LENGTH_SHORT).show()
 
 
-
-
         /**
-         * get GATT service and characteristics with UUID
+         * get GATT services and characteristics with UUID
          */
         /*if(bluetoothGatt != null) {
             wirelessService = bluetoothGatt?.getService(UUID.fromString("e081fec0-f757-4449-b9c9-bfa83133f7fc"))
@@ -93,13 +100,11 @@ class GattConnectActivity : AppCompatActivity() {
          * btn click listener
          */
         btn_getNetworks.setOnClickListener{
-            //getNetworks()
-            bluetoothGatt?.discoverServices()
+            getNetworks()
         }
-
-
-
+        
     } //onCreate
+
 
     /**
      * callback from the GATT server
@@ -112,6 +117,8 @@ class GattConnectActivity : AppCompatActivity() {
                     Toast.makeText(this@GattConnectActivity, "Connected to GATT", Toast.LENGTH_SHORT).show()
                 }
                 BluetoothProfile.STATE_DISCONNECTED ->{
+                    bluetoothGatt?.close()
+
                     var builder: AlertDialog.Builder = AlertDialog.Builder(this@GattConnectActivity)
                     builder.setMessage("There was an error with the GATT connection ...")
                         .setCancelable(false)

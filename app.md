@@ -1,7 +1,3 @@
-If you want to scan for only specific types of peripherals, you can instead call `startLeScan(UUID[], BluetoothAdapter.LeScanCallback)`, providing an array of `UUID` objects that specify the GATT services your app supports. 
-
-
-
 # Nymea Network Manager
 
 ## Raspi
@@ -20,6 +16,7 @@ delete connection with name:
 
 
 
-**11.12.2019**
+**20.12.2019**
 
-- decleration der benötigten services und characteristics 
+- Plakat erstellen 1h
+- call device.connect with  BluetoothDevice.TRANSPORT_LE parameter
