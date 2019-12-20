@@ -102,7 +102,7 @@ class GattConnectActivity : AppCompatActivity() {
         btn_getNetworks.setOnClickListener{
             getNetworks()
         }
-        
+
     } //onCreate
 
 

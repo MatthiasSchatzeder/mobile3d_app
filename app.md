@@ -20,3 +20,4 @@ delete connection with name:
 
 - Plakat erstellen 1h
 - call device.connect with  BluetoothDevice.TRANSPORT_LE parameter
+
