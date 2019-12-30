@@ -1,16 +1,17 @@
 package com.example.myapplication
 
+import android.app.Activity
 import android.bluetooth.*
+import android.content.Context
 import android.content.DialogInterface
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_gatt_connect.*
-import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.android.synthetic.main.activity_settings.toolbar
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 var bluetoothGatt: BluetoothGatt? = null
@@ -26,13 +27,11 @@ var wirelessService: BluetoothGattService? = null
 var wirelessCommander: BluetoothGattCharacteristic? = null
 var commanderResponse: BluetoothGattCharacteristic? = null
 
+
 class GattConnectActivity : AppCompatActivity() {
 
     override fun onStop() {
-        //bluetoothGatt?.disconnect()
-
-        //for debugging purposes
-        bluetoothGatt?.close() // -> should be called in gattCallback onConnectionStateChanged(STATE_DISCONNECTED)
+        bluetoothGatt?.close()
 
         super.onStop()
     }
@@ -61,9 +60,14 @@ class GattConnectActivity : AppCompatActivity() {
          * get BluetoothGATT
          * connection Object
          */
+        Log.e("Adress", device?.address.toString())
+
         bluetoothGatt = device?.connectGatt(this, false, gattCallback, BluetoothDevice.TRANSPORT_LE)
 
-        Toast.makeText(this, "" + bluetoothGatt?.device?.name, Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "" + bluetoothGatt?.device?.name, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "" + bluetoothGatt.toString(), Toast.LENGTH_SHORT).show()
+
+        val bluetoothManager: BluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager // -> for testing, getting connected devices
 
 
         /**
@@ -93,18 +97,33 @@ class GattConnectActivity : AppCompatActivity() {
         }else{
             Toast.makeText(this, "bt gatt null", Toast.LENGTH_SHORT).show()
         }
-
          */
 
         /**
          * btn click listener
          */
         btn_getNetworks.setOnClickListener{
-            getNetworks()
+            //getNetworks()
+            //bluetoothGatt?.discoverServices()
+            bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).forEach{
+                Log.e("device: ", it.name + " ; "+ it.address)
+            }
         }
+
+
 
     } //onCreate
 
+    private fun notifyConnectionLost(){
+        var builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setMessage("Connection lost, try again.")
+            .setCancelable(false)
+            .setPositiveButton("OK"){ _: DialogInterface, _: Int ->
+                finish()
+            }
+        val alert = builder.create()
+        alert.show()
+    }
 
     /**
      * callback from the GATT server
@@ -114,52 +133,39 @@ class GattConnectActivity : AppCompatActivity() {
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
             when(newState){
                 BluetoothProfile.STATE_CONNECTED ->{
-                    Toast.makeText(this@GattConnectActivity, "Connected to GATT", Toast.LENGTH_SHORT).show()
+                    bluetoothGatt?.discoverServices()
                 }
                 BluetoothProfile.STATE_DISCONNECTED ->{
                     bluetoothGatt?.close()
+                    Log.e("ConStateChnages", "disconnected")
 
-                    var builder: AlertDialog.Builder = AlertDialog.Builder(this@GattConnectActivity)
-                    builder.setMessage("There was an error with the GATT connection ...")
-                        .setCancelable(false)
-                        .setPositiveButton("OK"){ _: DialogInterface, _: Int ->
-                            finish()
-                        }
-                    val alert = builder.create()
-                    alert.show()
+                    /**
+                     * return
+                     */
+                    val returnIntent = Intent()
+                    returnIntent.putExtra("result", "connection_lost")
+                    setResult(Activity.RESULT_OK, returnIntent)
+                    finish()
+
                 }
             }
+
+            Log.e("ConStateChnages", "$status $newState")
         }
 
         override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
-            Toast.makeText(this@GattConnectActivity, "" + bluetoothGatt?.services?.size, Toast.LENGTH_SHORT).show()
 
             bluetoothGatt?.services?.forEach{
-                Toast.makeText(this@GattConnectActivity, "" + it.uuid, Toast.LENGTH_SHORT).show()
             }
         }
 
-        override fun onCharacteristicChanged(
-            gatt: BluetoothGatt?,
-            characteristic: BluetoothGattCharacteristic?
-        ) {
-            Toast.makeText(this@GattConnectActivity, "changed", Toast.LENGTH_SHORT).show()
+        override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
         }
 
-        override fun onCharacteristicRead(
-            gatt: BluetoothGatt?,
-            characteristic: BluetoothGattCharacteristic?,
-            status: Int
-        ) {
-            Toast.makeText(this@GattConnectActivity, "read", Toast.LENGTH_SHORT).show()
+        override fun onCharacteristicRead(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
         }
 
-        override fun onCharacteristicWrite(
-            gatt: BluetoothGatt?,
-            characteristic: BluetoothGattCharacteristic?,
-            status: Int
-        ) {
-            Toast.makeText(this@GattConnectActivity, "write", Toast.LENGTH_SHORT).show()
+        override fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
         }
     } //gattCallback
 

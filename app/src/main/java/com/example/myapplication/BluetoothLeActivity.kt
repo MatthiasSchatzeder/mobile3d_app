@@ -18,6 +18,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.ParcelUuid
 import android.provider.Settings
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -30,6 +31,7 @@ private const val SCAN_PERIOD: Long = 10000
 private const val ENABLE_BT_REQUEST_CODE = 1
 
 private const val REQUEST_CODE_BLE_LOCATION = 32
+private const val CONNECTION_LOST_REQUEST = 40
 
 class BluetoothLeActivity: AppCompatActivity() {
 
@@ -59,6 +61,14 @@ class BluetoothLeActivity: AppCompatActivity() {
         }
 
         super.onStop()
+    }
+
+    override fun onResume() {
+        deviceNames.clear()
+        devices.clear()
+        arrayAdapter?.notifyDataSetChanged()
+
+        super.onResume()
     }
 
 
@@ -120,7 +130,7 @@ class BluetoothLeActivity: AppCompatActivity() {
 
             val intent = Intent(this, GattConnectActivity::class.java)
             intent.putExtra("BleDevice", targetBtDevice)
-            startActivity(intent)
+            startActivityForResult(intent, CONNECTION_LOST_REQUEST)
         }
 
         /**
@@ -195,6 +205,25 @@ class BluetoothLeActivity: AppCompatActivity() {
         if(requestCode == ENABLE_BT_REQUEST_CODE && resultCode == Activity.RESULT_CANCELED){
             finish()
         }
+        else if(requestCode == CONNECTION_LOST_REQUEST && resultCode == Activity.RESULT_OK){
+
+            Log.e("result", "" + data?.getStringExtra("result"))
+
+            if(data?.getStringExtra("result").equals("connection_lost")) {
+                /**
+                 * Alert Dialog
+                 */
+                var builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                builder.setMessage("Connection lost, try again.")
+                    .setCancelable(false)
+                    .setPositiveButton("OK") { _: DialogInterface, _: Int ->
+                        //nothing else happens
+                    }
+                val alert = builder.create()
+                alert.show()
+            }
+        }
+
         super.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -216,13 +245,14 @@ class BluetoothLeActivity: AppCompatActivity() {
             }, SCAN_PERIOD)
 
             currentlyScanning = true
-            //bluetoothLeScanner.startScan(filters, ScanSettings.Builder().setScanMode(ScanSettings.CALLBACK_TYPE_ALL_MATCHES).build(), myLeScanCallback)
+            //bluetoothLeScanner?.startScan(filters, ScanSettings.Builder().setScanMode(ScanSettings.CALLBACK_TYPE_ALL_MATCHES).build(), myLeScanCallback)
             bluetoothLeScanner?.startScan(myLeScanCallback)
 
             btn_scanDevices.text = "scanning ..."
         } else {
             currentlyScanning = false
             bluetoothLeScanner?.stopScan(myLeScanCallback)
+            btn_scanDevices.text = "SCAN FOR DEVICES"
         }
     }
 
