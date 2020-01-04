@@ -1,17 +1,23 @@
 package com.example.myapplication
 
 import android.app.Activity
+import android.app.ProgressDialog
 import android.bluetooth.*
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.Window
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.RelativeLayout
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import kotlinx.android.synthetic.main.activity_gatt_connect.*
 import kotlinx.android.synthetic.main.activity_settings.toolbar
+import java.util.*
 
 
 var bluetoothGatt: BluetoothGatt? = null
@@ -27,6 +33,11 @@ var wirelessService: BluetoothGattService? = null
 var wirelessCommander: BluetoothGattCharacteristic? = null
 var commanderResponse: BluetoothGattCharacteristic? = null
 
+/**
+ * 0: loading / connecting
+ * 1: done / connected
+ */
+var myStatus: Int = 0
 
 class GattConnectActivity : AppCompatActivity() {
 
@@ -46,10 +57,11 @@ class GattConnectActivity : AppCompatActivity() {
         var toolbar = toolbar
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Wifi Setup"
-        supportActionBar?.subtitle = "Scan and Select the Wifi to connect to"
         toolbar.setNavigationOnClickListener{
             finish()
         }
+
+
 
         /**
          * get passed BT device from BluetoothLEActivity
@@ -64,10 +76,10 @@ class GattConnectActivity : AppCompatActivity() {
 
         bluetoothGatt = device?.connectGatt(this, false, gattCallback, BluetoothDevice.TRANSPORT_LE)
 
-        //Toast.makeText(this, "" + bluetoothGatt?.device?.name, Toast.LENGTH_SHORT).show()
-        Toast.makeText(this, "" + bluetoothGatt.toString(), Toast.LENGTH_SHORT).show()
+        //enables loading animation
+        setLoading(true)
 
-        val bluetoothManager: BluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager // -> for testing, getting connected devices
+        //val bluetoothManager: BluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager // -> for testing, getting connected devices
 
 
         /**
@@ -103,26 +115,28 @@ class GattConnectActivity : AppCompatActivity() {
          * btn click listener
          */
         btn_getNetworks.setOnClickListener{
-            //getNetworks()
-            //bluetoothGatt?.discoverServices()
-            bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).forEach{
+            if(myStatus == 1){
+                getNetworks()
+            }
+            /*bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).forEach{
                 Log.e("device: ", it.name + " ; "+ it.address)
             }
+             */
         }
-
 
 
     } //onCreate
 
-    private fun notifyConnectionLost(){
-        var builder: AlertDialog.Builder = AlertDialog.Builder(this)
-        builder.setMessage("Connection lost, try again.")
-            .setCancelable(false)
-            .setPositiveButton("OK"){ _: DialogInterface, _: Int ->
-                finish()
-            }
-        val alert = builder.create()
-        alert.show()
+    private fun setLoading(enabled: Boolean){
+        if(enabled){
+            progress_bar.visibility = View.VISIBLE //enable progress bar
+            grey_out_view.visibility = View.VISIBLE //enable grey background
+            myStatus = 0
+        }else{
+            progress_bar.visibility = View.INVISIBLE //disable progress bar
+            grey_out_view.visibility = View.INVISIBLE //disable grey background
+            myStatus = 1
+        }
     }
 
     /**
@@ -134,6 +148,7 @@ class GattConnectActivity : AppCompatActivity() {
             when(newState){
                 BluetoothProfile.STATE_CONNECTED ->{
                     bluetoothGatt?.discoverServices()
+
                 }
                 BluetoothProfile.STATE_DISCONNECTED ->{
                     bluetoothGatt?.close()
@@ -156,17 +171,43 @@ class GattConnectActivity : AppCompatActivity() {
         override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
 
             bluetoothGatt?.services?.forEach{
+                Log.e("service: ", it.uuid.toString() + " ; " + it.type)
+            }
+
+            wirelessService = bluetoothGatt?.getService(UUID.fromString("e081fec0-f757-4449-b9c9-bfa83133f7fc"))
+
+            if(wirelessService != null){
+                Log.e("wirelessService ", "ready")
+
+                wirelessCommander = wirelessService?.getCharacteristic(UUID.fromString("e081fec1-f757-4449-b9c9-bfa83133f7fc"))
+                commanderResponse = wirelessService?.getCharacteristic(UUID.fromString("e081fec2-f757-4449-b9c9-bfa83133f7fc"))
+
+                if(wirelessCommander != null){
+                    Log.e("WirelessCommander ", "ready")
+                }
+
+                if(commanderResponse != null){
+                    Log.e("CommanderResponse ", "ready")
+                }
+
+                //disables loading animation
+                setLoading(false)
             }
         }
 
         override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
+            Log.e("Callback ", "changed")
         }
 
         override fun onCharacteristicRead(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
+            Log.e("Callback ", "read")
         }
 
         override fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
+            Log.e("Callback ", "write $status")
         }
+
+
     } //gattCallback
 
     private fun getNetworks(){

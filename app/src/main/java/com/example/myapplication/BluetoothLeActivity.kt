@@ -19,6 +19,7 @@ import android.os.Handler
 import android.os.ParcelUuid
 import android.provider.Settings
 import android.util.Log
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -242,6 +243,7 @@ class BluetoothLeActivity: AppCompatActivity() {
                 bluetoothLeScanner?.stopScan(myLeScanCallback)
                 //Toast.makeText(this, "" + devices.size + " devices found",Toast.LENGTH_SHORT).show()
                 btn_scanDevices.text = "SCAN FOR DEVICES"
+                progress_bar.visibility = View.INVISIBLE
             }, SCAN_PERIOD)
 
             currentlyScanning = true
@@ -249,10 +251,12 @@ class BluetoothLeActivity: AppCompatActivity() {
             bluetoothLeScanner?.startScan(myLeScanCallback)
 
             btn_scanDevices.text = "scanning ..."
+            progress_bar.visibility = View.VISIBLE
         } else {
             currentlyScanning = false
             bluetoothLeScanner?.stopScan(myLeScanCallback)
             btn_scanDevices.text = "SCAN FOR DEVICES"
+            progress_bar.visibility = View.INVISIBLE
         }
     }
 
