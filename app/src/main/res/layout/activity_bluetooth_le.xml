@@ -29,8 +29,7 @@
     <androidx.core.widget.ContentLoadingProgressBar
             android:id="@+id/progress_bar"
             style="?android:progressBarStyleLarge"
-            android:layout_width="5
-            0dp"
+            android:layout_width="50dp"
             android:layout_height="50dp"
             android:indeterminateTint="@color/colorPrimary"
             app:layout_constraintBottom_toTopOf="@id/btn_scanDevices"
@@ -53,7 +52,6 @@
             android:footerDividersEnabled="true"
             android:headerDividersEnabled="true"
             android:dividerHeight="1dp"
-            android:minHeight="100dp"
             >
 
     </ListView>

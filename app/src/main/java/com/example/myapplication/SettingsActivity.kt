@@ -33,11 +33,6 @@ class SettingsActivity : AppCompatActivity() {
                 Toast.makeText(this, "Notifications OFF", Toast.LENGTH_SHORT).show()
             }
         }
-
-        btn_SetupWifi.setOnClickListener {
-            val intent = Intent(this, BluetoothLeActivity::class.java)
-            startActivity(intent)
-        }
     }
 
 

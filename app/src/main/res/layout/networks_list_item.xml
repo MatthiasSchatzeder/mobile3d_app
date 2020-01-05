@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TextView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+
+        android:id="@+id/textView_NetworkName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_vertical"
+        android:fontFamily="sans-serif-medium"
+        android:text="Test Network"
+        android:textSize="25sp"
+        android:drawableLeft="@drawable/ic_wifi"
+        android:drawableRight="@drawable/ic_arrow_forward"
+        />
+

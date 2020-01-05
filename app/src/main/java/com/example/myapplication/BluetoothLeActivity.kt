@@ -25,7 +25,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import kotlinx.android.synthetic.main.activity_bluetooth_le.*
-import kotlinx.android.synthetic.main.activity_settings.toolbar
 
 
 private const val SCAN_PERIOD: Long = 10000
@@ -114,7 +113,7 @@ class BluetoothLeActivity: AppCompatActivity() {
         /**
          * link ListView and array adapter
          */
-        arrayAdapter = ArrayAdapter<String>(this, R.layout.bluetooth_le_device_list_item, deviceNames)
+        arrayAdapter = ArrayAdapter(this, R.layout.bluetooth_le_device_list_item, deviceNames)
         listView_bluetoothLeDevices.adapter = arrayAdapter
 
         /**
@@ -129,7 +128,7 @@ class BluetoothLeActivity: AppCompatActivity() {
 
             var targetBtDevice: BluetoothDevice = devices[position]
 
-            val intent = Intent(this, GattConnectActivity::class.java)
+            val intent = Intent(this, GattOperationsActivity::class.java)
             intent.putExtra("BleDevice", targetBtDevice)
             startActivityForResult(intent, CONNECTION_LOST_REQUEST)
         }

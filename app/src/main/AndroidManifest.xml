@@ -23,7 +23,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".GattConnectActivity"></activity>
+        <activity android:name=".GattOperationsActivity"></activity>
         <activity android:name=".BluetoothLeActivity" />
         <activity android:name=".SettingsActivity" />
         <activity
