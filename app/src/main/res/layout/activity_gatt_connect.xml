@@ -70,14 +70,52 @@
             android:visibility="invisible"
             />
 
+    <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/textInputLayout_password"
+            android:hint="Wifi Name / SSID"
+            android:layout_marginBottom="8dp"
+        >
 
+        <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/toolbar_height"
+                android:id="@+id/textInput_ssid"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/btn_connect"
+            android:hint="password"
+            app:endIconMode="password_toggle"
+            android:layout_marginBottom="8dp"
+            >
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/toolbar_height"
+                android:inputType="textPassword"
+                android:id="@+id/textInput_password"
+                />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@id/btn_getNetworks"
-            android:id="@+id/btn_refresh"
+            android:id="@+id/btn_connect"
+            android:text="connect"
+            android:height="@dimen/toolbar_height"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:layout_marginBottom="8dp"
         />
 
     <com.google.android.material.button.MaterialButton
@@ -89,7 +127,9 @@
             android:insetBottom="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:cornerRadius="0dp"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+
+            />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

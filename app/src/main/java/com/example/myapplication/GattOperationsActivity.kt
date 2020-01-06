@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.activity_gatt_connect.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 var bluetoothGatt: BluetoothGatt? = null
@@ -33,6 +34,7 @@ class GattOperationsActivity : AppCompatActivity() {
     var commanderResponse: BluetoothGattCharacteristic? = null
     var commanderResponseDescriptor: BluetoothGattDescriptor? = null
 
+    var sendingQueue: Queue<String> = LinkedList()
     var callbackMsg: String = ""
 
     var networkNames = ArrayList<String>()
@@ -90,6 +92,9 @@ class GattOperationsActivity : AppCompatActivity() {
         //enables loading animation
         setLoading(true)
 
+        //btn_getNetworks.isEnabled = false
+        btn_getNetworks.text = "get available networks\n [being developed]"
+
         //val bluetoothManager: BluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager // -> for testing, getting connected devices
 
         /**
@@ -98,11 +103,25 @@ class GattOperationsActivity : AppCompatActivity() {
         btn_getNetworks.setOnClickListener{
             if(myStatus == 1){ //checks if the gatt is connected and characteristics are initialized
                 getNetworks()
+                //writeToWirelessCommander("{\"c\":5}\n")
             }
         }
 
-        btn_refresh.setOnClickListener {
-            arrayAdapter?.notifyDataSetInvalidated()
+        btn_connect.setOnClickListener {
+
+            textInput_ssid.setText("ARRIS_24G")
+            textInput_password.setText("1chGebeN1emalsAuf!")
+
+            if(!textInput_ssid.text!!.isEmpty() && !textInput_password.text!!.isEmpty()) {
+                if (sendingQueue.isEmpty()) {
+                    writeToWirelessCommander("{\"c\":1,\"p\":{\"e\":\"${textInput_ssid.text}\",\"p\":\"${textInput_password.text}\"}}\n")
+
+                    textInput_ssid.text!!.clear()
+                    textInput_password.text!!.clear()
+                }
+            }else{
+                Toast.makeText(this, "enter password and ssid", Toast.LENGTH_SHORT).show()
+            }
         }
 
     } //onCreate
@@ -124,6 +143,24 @@ class GattOperationsActivity : AppCompatActivity() {
         returnIntent.putExtra("result", "connection_lost")
         setResult(Activity.RESULT_OK, returnIntent)
         finish()
+    }
+
+    /**
+     * splits string into smaller parts and adds it to the sendingQueue
+     * chunked: splits string and returns map that can be iterated and the split string parts are added to sendingQueue
+     *          needs to be done (bluetooth gatt can only communicate with 20Bytes per message, size of 10(Bytes) is used for safer communication)
+     */
+    private fun writeToWirelessCommander(string: String){
+        if(sendingQueue.isEmpty()) {
+            string.chunked(10).forEach {
+                sendingQueue.add(it)
+            }
+
+            wirelessCommander?.value = sendingQueue.remove().toByteArray()
+            bluetoothGatt?.writeCharacteristic(wirelessCommander)
+        }else{
+            Log.e("GattCallback ", "sendingQueue ist not empty")
+        }
     }
 
     /**
@@ -191,12 +228,13 @@ class GattOperationsActivity : AppCompatActivity() {
             }
         }
 
-
-
         override fun onDescriptorWrite(gatt: BluetoothGatt?, descriptor: BluetoothGattDescriptor?, status: Int) {
             Log.e("GattCallback ", "descriptor write: $status")
         }
 
+        /**
+         * callback information
+         */
         override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
             //Log.e("GattCallback ", "characteristic changed(${characteristic?.uuid}): ${characteristic?.value?.toString(Charsets.UTF_8)}")
 
@@ -204,27 +242,37 @@ class GattOperationsActivity : AppCompatActivity() {
 
             if(s.contains("\n")){
                 callbackMsg += s
-                //Log.e("GattCallback ", callbackMsg)
+
+                Log.e("GattCallback ", callbackMsg)
 
                 val myJSONObject = JSONObject(callbackMsg)
-                val networks: JSONArray = myJSONObject.getJSONArray("p")
 
-                /**
-                 * add networks to networkNames
-                  */
-                var i = 0
-                while(i < networks.length()){
-                    var currNetwork: JSONObject = networks.getJSONObject(i)
-                    networkNames.add(currNetwork.getString("e"))
-                    Log.e("GattCallback ", currNetwork.getString("e"))
-                    i++
+                if(myJSONObject.getInt("c") == 0) { //getNetworks was called
+                    val networks: JSONArray = myJSONObject.getJSONArray("p")
+                    /**
+                     * add networks to networkNames
+                     */
+                    var i = 0
+                    while (i < networks.length()) {
+                        var currNetwork: JSONObject = networks.getJSONObject(i)
+                        networkNames.add(currNetwork.getString("e"))
+                        Log.e("GattCallback ", currNetwork.getString("e"))
+                        i++
+                    }
                 }
+                else if(myJSONObject.getInt("c") == 1){ //connect was called
+                    //cant be called here -> not response, but dont know why
+                    //writeToWirelessCommander("{\"c\":5}\n")
+                }
+                else if(myJSONObject.getInt("c") == 5){ //get connection was called
+                    var myConnection = myJSONObject.getJSONObject("p")
+                    Log.e("GattCallback ", myConnection.getString("i") + "<- ip here if not empty")
+                }
+
                 callbackMsg = ""
             }else{
                 callbackMsg += s
             }
-
-            arrayAdapter?.notifyDataSetChanged()
         }
 
         override fun onCharacteristicRead(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
@@ -232,29 +280,31 @@ class GattOperationsActivity : AppCompatActivity() {
         }
 
         override fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
-            if(characteristic == wirelessCommander && status == 0){
-                Log.e("GattCallback ", "write $status")
-            }
-        }
+            Log.e("GattCallback ", "writeCallback $status")
 
-        override fun onPhyRead(gatt: BluetoothGatt?, txPhy: Int, rxPhy: Int, status: Int) {
-            Log.e("GattCallback ", "$status $txPhy ; $rxPhy")
+            if(!sendingQueue.isEmpty() && status == 0){
+                wirelessCommander?.value = sendingQueue.remove().toByteArray()
+                bluetoothGatt?.writeCharacteristic(wirelessCommander)
+            }
         }
 
     } //gattCallback
 
     private fun getNetworks(){
-        wirelessCommander?.value = null
         //networkNames.clear()
-        arrayAdapter?.notifyDataSetChanged()
-        Log.e("GattCallback ", "" + networkNames.size)
+        //arrayAdapter?.notifyDataSetChanged()
+        //Log.e("GattCallback ", "" + networkNames.size)
 
-        wirelessCommander?.value = "{\"c\":0}\n".toByteArray() //size is 9 byte
+        //wirelessCommander?.value = "{\"c\":0}\n".toByteArray() //size is 9 byte
+        writeToWirelessCommander("{\"c\":0}\n")
 
+        /*
         if(bluetoothGatt?.writeCharacteristic(wirelessCommander)!!){
             //Log.e("GattCallback ", "true")
         }else{
             Toast.makeText(this, "Connection not responding, try to connect again.", Toast.LENGTH_SHORT).show()
         }
+
+         */
     }
 }
