@@ -36,31 +36,32 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/appbar_layout"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/btn_getNetworks"
+            app:layout_constraintBottom_toTopOf="@id/textInputLayout_ssid"
             app:layout_constraintVertical_bias="0.0"
             android:footerDividersEnabled="true"
             android:headerDividersEnabled="true"
             android:divider="@color/colorBlack"
             android:dividerHeight="1dp"
+            android:layout_marginBottom="8dp"
 
             />
 
     <View
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#80000000"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorWhite"
+            app:layout_constraintTop_toBottomOf="@id/appbar_layout"
             app:layout_constraintStart_toStartOf="parent"
             android:elevation="5dp"
-            android:id="@+id/grey_out_view"
+            android:id="@+id/loading_view"
             android:visibility="invisible"
             />
 
     <androidx.core.widget.ContentLoadingProgressBar
             android:id="@+id/progress_bar"
             style="?android:progressBarStyleLarge"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:indeterminateTint="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -76,6 +77,7 @@
             app:layout_constraintBottom_toTopOf="@id/textInputLayout_password"
             android:hint="Wifi Name / SSID"
             android:layout_marginBottom="8dp"
+            android:id="@+id/textInputLayout_ssid"
         >
 
         <com.google.android.material.textfield.TextInputEditText
@@ -91,7 +93,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toTopOf="@id/btn_connect"
-            android:hint="password"
+            android:hint="Password"
             app:endIconMode="password_toggle"
             android:layout_marginBottom="8dp"
             >
@@ -109,25 +111,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/btn_getNetworks"
+            app:layout_constraintBottom_toTopOf="@id/btn_getConnection"
             android:id="@+id/btn_connect"
             android:text="connect"
-            android:height="@dimen/toolbar_height"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:layout_marginBottom="8dp"
         />
 
     <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_getConnection"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_height"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/btn_getNetworks"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:layout_marginBottom="8dp"
+            android:text="Get Connection"
+        />
+
+    <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/btn_getNetworks"
             android:text="Get available Networks"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:cornerRadius="0dp"
             app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="8dp"
 
             />
 

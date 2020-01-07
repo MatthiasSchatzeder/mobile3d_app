@@ -32,13 +32,6 @@ PlatformName=nymea-box
 
 
 
-log:
+## App
 
-```
- I | BluetoothServer: Got command stream "{\n    \"c\": 5\n}\n"
- I | BluetoothServer: WirelessService: Execute get current connection.
- I | BluetoothServer: WirelessService: There is currently no access active accesspoint
- I | BluetoothServer: WirelessService: Start streaming response data: 53 bytes
- I | BluetoothServer: WirelessService: Finished streaming response data
-```
-
+transparent color: #80000000

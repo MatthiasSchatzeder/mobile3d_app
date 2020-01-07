@@ -1,11 +1,14 @@
 package com.example.myapplication
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.bluetooth.*
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -34,6 +37,7 @@ class GattOperationsActivity : AppCompatActivity() {
     var commanderResponse: BluetoothGattCharacteristic? = null
     var commanderResponseDescriptor: BluetoothGattDescriptor? = null
 
+    private val handler: Handler = Handler()
     var sendingQueue: Queue<String> = LinkedList()
     var callbackMsg: String = ""
 
@@ -44,9 +48,28 @@ class GattOperationsActivity : AppCompatActivity() {
 
     /**
      * 0: loading / connecting
-     * 1: done / connected
+     * 1: connected / idle
+     * 2: sending
+     * 3: done sending
      */
     var myStatus: Int = 0
+
+    fun notifyStatusChanged(){
+        when(myStatus){
+            0->{
+
+            }
+            1->{
+
+            }
+            2->{
+
+            }
+            3->{
+                myStatus = 1
+            }
+        }
+    }
 
 
     override fun onStop() {
@@ -92,25 +115,18 @@ class GattOperationsActivity : AppCompatActivity() {
         //enables loading animation
         setLoading(true)
 
-        //btn_getNetworks.isEnabled = false
-        btn_getNetworks.text = "get available networks\n [being developed]"
-
-        //val bluetoothManager: BluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager // -> for testing, getting connected devices
-
-        /**
-         * btn click listener
-         */
-        btn_getNetworks.setOnClickListener{
-            if(myStatus == 1){ //checks if the gatt is connected and characteristics are initialized
-                getNetworks()
-                //writeToWirelessCommander("{\"c\":5}\n")
-            }
+        listView_networks.setOnItemClickListener{_, _, position, _ ->
+            textInput_ssid.setText(networkNames.get(position))
         }
 
+        /**
+         * btn connect on click listener
+         */
         btn_connect.setOnClickListener {
+            hideKeyboard(this)
 
-            textInput_ssid.setText("ARRIS_24G")
-            textInput_password.setText("1chGebeN1emalsAuf!")
+            //textInput_ssid.setText("ARRIS_24G")
+            //textInput_password.setText("1chGebeN1emalsAuf!")
 
             if(!textInput_ssid.text!!.isEmpty() && !textInput_password.text!!.isEmpty()) {
                 if (sendingQueue.isEmpty()) {
@@ -124,16 +140,91 @@ class GattOperationsActivity : AppCompatActivity() {
             }
         }
 
+        btn_getConnection.setOnClickListener{
+            hideKeyboard(this)
+
+            writeToWirelessCommander("{\"c\":5}\n")
+
+            //wait until sending is done
+            while (myStatus == 2);
+
+            /**
+             * open alert dialog with connection information
+             */
+            val myConnection = JSONObject(callbackMsg).getJSONObject("p")
+
+            var wifi:String
+            var ip: String
+
+            if(myConnection.getString("e").isEmpty() && myConnection.getString("i").isEmpty()){
+                wifi = "No network connected at the moment."
+                ip = "Try to connect again and check password and ssid."
+            }else{
+                wifi = "WIFI: " + myConnection.getString("e")
+                ip = "IP: " + myConnection.getString("i")
+            }
+
+
+            var builder: AlertDialog.Builder = AlertDialog.Builder(this)
+            builder.setTitle("Current Connection")
+                .setCancelable(false)
+                .setMessage("$wifi\n$ip")
+                .setPositiveButton("OK"){_, _ ->
+                    //do nothing on ok
+                }
+
+            val alertDialog = builder.create()
+            alertDialog.show()
+        }
+
+        /**
+         * btn get networks on click listener
+         */
+        btn_getNetworks.setOnClickListener{
+            hideKeyboard(this)
+
+            networkNames.clear()
+            writeToWirelessCommander("{\"c\":0}\n")
+
+            //wait until sending is done
+            while (myStatus == 2);
+
+            val networks = JSONObject(callbackMsg).getJSONArray("p")
+            var i = 0
+            while (i < networks.length()) {
+                var currNetwork: JSONObject = networks.getJSONObject(i)
+                networkNames.add(currNetwork.getString("e"))
+                i++
+            }
+
+            arrayAdapter?.notifyDataSetChanged()
+        }
+
+
+
     } //onCreate
+
+    //function that hides the keyboard
+    open fun hideKeyboard(activity: Activity) {
+        val imm =
+            activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        var view = activity.currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(activity)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
 
     private fun setLoading(enabled: Boolean){
         if(enabled){
             progress_bar.visibility = View.VISIBLE //enable progress bar
-            grey_out_view.visibility = View.VISIBLE //enable grey background
+            loading_view.visibility = View.VISIBLE //enable grey background
             myStatus = 0
         }else{
             progress_bar.visibility = View.INVISIBLE //disable progress bar
-            grey_out_view.visibility = View.INVISIBLE //disable grey background
+            loading_view.visibility = View.INVISIBLE //disable grey background
             myStatus = 1
         }
     }
@@ -151,15 +242,22 @@ class GattOperationsActivity : AppCompatActivity() {
      *          needs to be done (bluetooth gatt can only communicate with 20Bytes per message, size of 10(Bytes) is used for safer communication)
      */
     private fun writeToWirelessCommander(string: String){
-        if(sendingQueue.isEmpty()) {
+        callbackMsg = ""
+        setLoading(true)
+
+        if(sendingQueue.isEmpty() || myStatus == 1) {
+            myStatus = 2
             string.chunked(10).forEach {
                 sendingQueue.add(it)
             }
 
             wirelessCommander?.value = sendingQueue.remove().toByteArray()
-            bluetoothGatt?.writeCharacteristic(wirelessCommander)
+            if(bluetoothGatt?.writeCharacteristic(wirelessCommander) == false){
+                returnConnectionLost()
+            }
+
         }else{
-            Log.e("GattCallback ", "sendingQueue ist not empty")
+            Log.e("GattCallback ", "sendingQueue ist not empty | status is sending(2)")
         }
     }
 
@@ -218,7 +316,7 @@ class GattOperationsActivity : AppCompatActivity() {
 
                     if(commanderResponseDescriptor != null){
                         commanderResponseDescriptor!!.value = byteArrayOf(0x01, 0x00)
-                        Log.e("GattCallback ", "" + bluetoothGatt?.writeDescriptor(commanderResponseDescriptor))
+                        bluetoothGatt?.writeDescriptor(commanderResponseDescriptor)
                     }
                 }
 
@@ -249,27 +347,25 @@ class GattOperationsActivity : AppCompatActivity() {
 
                 if(myJSONObject.getInt("c") == 0) { //getNetworks was called
                     val networks: JSONArray = myJSONObject.getJSONArray("p")
-                    /**
-                     * add networks to networkNames
-                     */
+
                     var i = 0
                     while (i < networks.length()) {
                         var currNetwork: JSONObject = networks.getJSONObject(i)
-                        networkNames.add(currNetwork.getString("e"))
                         Log.e("GattCallback ", currNetwork.getString("e"))
                         i++
                     }
                 }
                 else if(myJSONObject.getInt("c") == 1){ //connect was called
-                    //cant be called here -> not response, but dont know why
-                    //writeToWirelessCommander("{\"c\":5}\n")
+
                 }
                 else if(myJSONObject.getInt("c") == 5){ //get connection was called
                     var myConnection = myJSONObject.getJSONObject("p")
                     Log.e("GattCallback ", myConnection.getString("i") + "<- ip here if not empty")
                 }
 
-                callbackMsg = ""
+                myStatus = 1
+                setLoading(false)
+
             }else{
                 callbackMsg += s
             }
@@ -289,22 +385,4 @@ class GattOperationsActivity : AppCompatActivity() {
         }
 
     } //gattCallback
-
-    private fun getNetworks(){
-        //networkNames.clear()
-        //arrayAdapter?.notifyDataSetChanged()
-        //Log.e("GattCallback ", "" + networkNames.size)
-
-        //wirelessCommander?.value = "{\"c\":0}\n".toByteArray() //size is 9 byte
-        writeToWirelessCommander("{\"c\":0}\n")
-
-        /*
-        if(bluetoothGatt?.writeCharacteristic(wirelessCommander)!!){
-            //Log.e("GattCallback ", "true")
-        }else{
-            Toast.makeText(this, "Connection not responding, try to connect again.", Toast.LENGTH_SHORT).show()
-        }
-
-         */
-    }
 }
