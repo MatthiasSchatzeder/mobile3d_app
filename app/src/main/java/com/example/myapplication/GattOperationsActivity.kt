@@ -50,27 +50,10 @@ class GattOperationsActivity : AppCompatActivity() {
      * 0: loading / connecting
      * 1: connected / idle
      * 2: sending
-     * 3: done sending
      */
     var myStatus: Int = 0
 
-    fun notifyStatusChanged(){
-        when(myStatus){
-            0->{
-
-            }
-            1->{
-
-            }
-            2->{
-
-            }
-            3->{
-                myStatus = 1
-            }
-        }
-    }
-
+    var isConnectingToWifi = false
 
     override fun onStop() {
         bluetoothGatt?.close()
@@ -116,65 +99,73 @@ class GattOperationsActivity : AppCompatActivity() {
         setLoading(true)
 
         listView_networks.setOnItemClickListener{_, _, position, _ ->
-            textInput_ssid.setText(networkNames.get(position))
+            textInput_ssid.setText(networkNames[position])
         }
 
         /**
          * btn connect on click listener
          */
         btn_connect.setOnClickListener {
+            isConnectingToWifi = true
             hideKeyboard(this)
 
             //textInput_ssid.setText("ARRIS_24G")
             //textInput_password.setText("1chGebeN1emalsAuf!")
 
             if(!textInput_ssid.text!!.isEmpty() && !textInput_password.text!!.isEmpty()) {
-                if (sendingQueue.isEmpty()) {
+                networkNames.clear()
+                arrayAdapter?.notifyDataSetChanged()
+
+                if (myStatus == 1) {
                     writeToWirelessCommander("{\"c\":1,\"p\":{\"e\":\"${textInput_ssid.text}\",\"p\":\"${textInput_password.text}\"}}\n")
 
                     textInput_ssid.text!!.clear()
                     textInput_password.text!!.clear()
+
                 }
             }else{
                 Toast.makeText(this, "enter password and ssid", Toast.LENGTH_SHORT).show()
             }
+            isConnectingToWifi = false
         }
 
         btn_getConnection.setOnClickListener{
-            hideKeyboard(this)
+            if(!isConnectingToWifi) {
+                hideKeyboard(this)
 
-            writeToWirelessCommander("{\"c\":5}\n")
+                writeToWirelessCommander("{\"c\":5}\n")
 
-            //wait until sending is done
-            while (myStatus == 2);
+                //wait until sending is done
+                while (myStatus == 2);
 
-            /**
-             * open alert dialog with connection information
-             */
-            val myConnection = JSONObject(callbackMsg).getJSONObject("p")
+                /**
+                 * open alert dialog with connection information
+                 */
+                val myConnection = JSONObject(callbackMsg).getJSONObject("p")
 
-            var wifi:String
-            var ip: String
+                var wifi: String
+                var ip: String
 
-            if(myConnection.getString("e").isEmpty() && myConnection.getString("i").isEmpty()){
-                wifi = "No network connected at the moment."
-                ip = "Try to connect again and check password and ssid."
-            }else{
-                wifi = "WIFI: " + myConnection.getString("e")
-                ip = "IP: " + myConnection.getString("i")
-            }
-
-
-            var builder: AlertDialog.Builder = AlertDialog.Builder(this)
-            builder.setTitle("Current Connection")
-                .setCancelable(false)
-                .setMessage("$wifi\n$ip")
-                .setPositiveButton("OK"){_, _ ->
-                    //do nothing on ok
+                if (myConnection.getString("e").isEmpty() && myConnection.getString("i").isEmpty()) {
+                    wifi = "No network connected at the moment."
+                    ip = "Try to connect again and check password and ssid."
+                } else {
+                    wifi = "WIFI: " + myConnection.getString("e")
+                    ip = "IP: " + myConnection.getString("i")
                 }
 
-            val alertDialog = builder.create()
-            alertDialog.show()
+
+                var builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                builder.setTitle("Current Connection")
+                    .setCancelable(false)
+                    .setMessage("$wifi\n$ip")
+                    .setPositiveButton("OK") { _, _ ->
+                        //do nothing on ok
+                    }
+
+                val alertDialog = builder.create()
+                alertDialog.show()
+            }
         }
 
         /**
@@ -191,10 +182,14 @@ class GattOperationsActivity : AppCompatActivity() {
 
             val networks = JSONObject(callbackMsg).getJSONArray("p")
             var i = 0
-            while (i < networks.length()) {
-                var currNetwork: JSONObject = networks.getJSONObject(i)
-                networkNames.add(currNetwork.getString("e"))
-                i++
+            if(networks.length() > 0) {
+                while (i < networks.length()) {
+                    var currNetwork: JSONObject = networks.getJSONObject(i)
+                    networkNames.add(currNetwork.getString("e"))
+                    i++
+                }
+            }else{
+                Toast.makeText(this, "no visible networks in range", Toast.LENGTH_SHORT).show()
             }
 
             arrayAdapter?.notifyDataSetChanged()
@@ -205,7 +200,7 @@ class GattOperationsActivity : AppCompatActivity() {
     } //onCreate
 
     //function that hides the keyboard
-    open fun hideKeyboard(activity: Activity) {
+    private fun hideKeyboard(activity: Activity) {
         val imm =
             activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         //Find the currently focused view, so we can grab the correct window token from it.
@@ -217,6 +212,9 @@ class GattOperationsActivity : AppCompatActivity() {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
+    /**
+     * function that shows loading animation
+     */
     private fun setLoading(enabled: Boolean){
         if(enabled){
             progress_bar.visibility = View.VISIBLE //enable progress bar
@@ -229,6 +227,9 @@ class GattOperationsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * return connection_lost value to previous activity
+     */
     private fun returnConnectionLost(){
         val returnIntent = Intent()
         returnIntent.putExtra("result", "connection_lost")
@@ -354,17 +355,22 @@ class GattOperationsActivity : AppCompatActivity() {
                         Log.e("GattCallback ", currNetwork.getString("e"))
                         i++
                     }
+                    setLoading(false)
                 }
                 else if(myJSONObject.getInt("c") == 1){ //connect was called
-
+                    //added some extra delay for raspi to connect
+                    handler.postDelayed({
+                        setLoading(false)
+                    },2000)
                 }
                 else if(myJSONObject.getInt("c") == 5){ //get connection was called
                     var myConnection = myJSONObject.getJSONObject("p")
                     Log.e("GattCallback ", myConnection.getString("i") + "<- ip here if not empty")
+                    setLoading(false)
                 }
 
                 myStatus = 1
-                setLoading(false)
+
 
             }else{
                 callbackMsg += s
