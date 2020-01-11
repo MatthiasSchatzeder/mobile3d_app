@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import io.socket.client.Ack
 import io.socket.client.IO
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.fragment_axis.view.*
@@ -15,14 +16,18 @@ class Axes : Fragment() {
 
     var distance: Double = 1.0
 
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_axis, container, false)
 
-        var opts = IO.Options()
-        opts.query = "token=Bearer "
-        var socket: Socket = IO.socket("http://192.168.83.16", opts)
+        val opts = IO.Options()
+        opts.query = "token=Bearer $GlobalAuthToken"
+        Log.e("test ", "" + opts.query)
+        val socket: Socket = IO.socket("http://192.168.83.16:4000", opts)
 
         socket.connect()
+            .on(Socket.EVENT_CONNECT) { Log.e("test ", "connected") }
+            .on(Socket.EVENT_DISCONNECT) { Log.e("test ", "disconnected") }
 
 
         view.btn_zero_point_one_mm.setOnClickListener {
@@ -43,7 +48,13 @@ class Axes : Fragment() {
         }
 
         view.btn_up.setOnClickListener{
-            Log.e("test ", "" + socket.connected())
+            socket.emit("moveForward", distance.toString(), Ack{
+                Log.e("test ", it.toString())
+            })
+        }
+
+        view.btn_left.setOnClickListener{
+
         }
 
         return view

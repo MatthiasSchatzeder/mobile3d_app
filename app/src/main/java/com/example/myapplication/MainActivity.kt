@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import kotlinx.android.synthetic.main.activity_main.*
 
-
+var GlobalAuthToken = ""
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         var toolbar = toolbar
         setSupportActionBar(toolbar)
 
+        HttpClientGetToken().execute()
 
 
         /**

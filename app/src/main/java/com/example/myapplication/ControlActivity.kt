@@ -9,21 +9,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_control.*
-import java.io.*
-import java.lang.StringBuilder
-import java.lang.reflect.Parameter
-import java.net.HttpURLConnection
-import java.net.URL
-import java.net.URLEncoder
 
 
 class ControlActivity : AppCompatActivity() {
-
-    val url = "http://192.168.83.16"
-    var params: Map<String, String> = HashMap()
-    var reqParam = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode("app", "UTF-8") +
-    "&" + URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode("test", "UTF-8")
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,31 +51,9 @@ class ControlActivity : AppCompatActivity() {
         /**
          * http post request to get auth token from api / backend
          */
-        var url_object = URL(url)
-        var con: HttpURLConnection = url_object.openConnection() as HttpURLConnection
-        con.requestMethod = "POST"
-        con.doOutput = true
 
 
-        var outStream = OutputStreamWriter(con.outputStream)
-        outStream.write(reqParam)
-        outStream.flush()
 
-        /**
-         * response
-         */
-        var inStream = BufferedInputStream(con.inputStream)
-        var bufferedReader = BufferedReader(InputStreamReader(inStream))
-        var result = ""
-
-        var line:String
-        do {
-            line = bufferedReader.readLine()
-            result += line
-
-        }while (line != null)
-
-        Log.e("test ", "" + result)
 
     }// onCreate
 
