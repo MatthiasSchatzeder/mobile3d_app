@@ -28,9 +28,9 @@ class ControlActivity : AppCompatActivity() {
         TabLayoutMediator(tabs, viewpager, object: TabLayoutMediator.OnConfigureTabCallback{
             override fun onConfigureTab(tab: TabLayout.Tab, position: Int) {
                 when(position){
-                    0 -> tab.setText("Axis")
-                    1 -> tab.setText("Tool")
-                    2 -> tab.setText("General")
+                    0 -> tab.text = "Axis"
+                    1 -> tab.text = "Tool"
+                    2 -> tab.text = "General"
                 }
             }
         }).attach()

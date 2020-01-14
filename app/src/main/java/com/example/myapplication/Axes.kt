@@ -30,6 +30,8 @@ class Axes : Fragment() {
             .on(Socket.EVENT_DISCONNECT) { Log.e("test ", "disconnected") }
 
 
+
+
         view.btn_zero_point_one_mm.setOnClickListener {
             distance = 0.1
             view.toggleGroup.check(R.id.btn_zero_point_one_mm)

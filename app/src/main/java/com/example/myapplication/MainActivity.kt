@@ -1,18 +1,18 @@
 package com.example.myapplication
 
 
-import android.Manifest
-import android.app.AlertDialog
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Color
-import android.os.Build
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -20,23 +20,28 @@ var GlobalAuthToken = ""
 
 class MainActivity : AppCompatActivity() {
 
-    val color_red = "#ff0000"
-    val color_green = "#34eb34"
+    var handler = Handler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //page test
-        text_view_satus_message.text = "offline"
-        text_view_satus_message.setTextColor(Color.parseColor(color_red))
-
         //init toolbar
         var toolbar = toolbar
         setSupportActionBar(toolbar)
 
-        HttpClientGetToken().execute()
 
+        setStatusView(0)
+        handler.postDelayed({
+            setStatusView(1)
+            handler.postDelayed({setStatusView(2) },3000)
+        },3000)
+
+
+
+
+        var ret = HttpClientConnect().execute("<ip of the raspberry / backend>").get()
+        Log.e("test ", "return $ret")
 
         /**
          * listens to clicks of the Navigation Icon on the toolbar
@@ -89,6 +94,23 @@ class MainActivity : AppCompatActivity() {
             return@setNavigationItemSelectedListener false
         }
     }//onCreate
+
+    private fun setStatusView(status: Int){
+        when(status){
+            0->{
+                textView_status.background = ColorDrawable(ContextCompat.getColor(this, R.color.colorLightGrey))
+                textView_status.text = "connecting..."
+            }
+            1->{
+                textView_status.background = ColorDrawable(ContextCompat.getColor(this, R.color.colorGreen))
+                textView_status.text = "connected"
+            }
+            2->{
+                textView_status.background = ColorDrawable(ContextCompat.getColor(this, R.color.colorRed))
+                textView_status.text = "offline"
+            }
+        }
+    }
 
     /**
      * initializes sidebar menu layout
