@@ -31,17 +31,28 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
 
+        /**
+         * status view test
+         */
+        /*
         setStatusView(0)
         handler.postDelayed({
             setStatusView(1)
             handler.postDelayed({setStatusView(2) },3000)
         },3000)
 
+         */
+
 
 
 
         var ret = HttpClientConnect().execute("<ip of the raspberry / backend>").get()
         Log.e("test ", "return $ret")
+
+        if(ret == false){
+            setStatusView(2)
+        }
+
 
         /**
          * listens to clicks of the Navigation Icon on the toolbar
@@ -98,15 +109,18 @@ class MainActivity : AppCompatActivity() {
     private fun setStatusView(status: Int){
         when(status){
             0->{
-                textView_status.background = ColorDrawable(ContextCompat.getColor(this, R.color.colorLightGrey))
-                textView_status.text = "connecting..."
+                textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorLightGrey))
+                //textView_status.background = ColorDrawable(ContextCompat.getColor(this, R.color.colorLightGrey))
+                textView_status.text = "connecting"
             }
             1->{
-                textView_status.background = ColorDrawable(ContextCompat.getColor(this, R.color.colorGreen))
+                textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorGreen))
+                //textView_status.background = ColorDrawable(ContextCompat.getColor(this, R.color.colorGreen))
                 textView_status.text = "connected"
             }
             2->{
-                textView_status.background = ColorDrawable(ContextCompat.getColor(this, R.color.colorRed))
+                textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorRed))
+                //textView_status.background = ColorDrawable(ContextCompat.getColor(this, R.color.colorRed))
                 textView_status.text = "offline"
             }
         }

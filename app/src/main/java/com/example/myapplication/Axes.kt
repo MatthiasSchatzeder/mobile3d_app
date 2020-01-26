@@ -20,6 +20,9 @@ class Axes : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_axis, container, false)
 
+        /**
+         * test connection
+         */
         val opts = IO.Options()
         opts.query = "token=Bearer $GlobalAuthToken"
         Log.e("test ", "" + opts.query)
@@ -51,7 +54,10 @@ class Axes : Fragment() {
 
         view.btn_up.setOnClickListener{
             socket.emit("moveForward", distance.toString(), Ack{
-                Log.e("test ", it.toString())
+                it.forEach {msg: Any ->
+                    Log.e("test ", msg.toString())
+                }
+                //Log.e("test ", it.toString())
             })
         }
 
@@ -60,5 +66,5 @@ class Axes : Fragment() {
         }
 
         return view
-    }
+    } //onViewCreate
 }

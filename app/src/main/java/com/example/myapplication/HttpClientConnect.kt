@@ -75,8 +75,8 @@ class HttpClientConnect : AsyncTask<String, Void, Any?>(){
                     Log.e("test ", "disconnected")
                 }
 
-
             return socket
+
         }catch (exc: Exception){
             Log.e("test ", "URL not reachable")
             return false
