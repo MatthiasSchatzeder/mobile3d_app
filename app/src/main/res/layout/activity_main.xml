@@ -56,11 +56,27 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textView_status"
+                android:id="@+id/divider_dot"
 
                 android:src="@drawable/ic_dot"
 
                 android:layout_marginTop="8dp"
                 />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView_current_action"
+
+                app:layout_constraintTop_toBottomOf="@id/divider_dot"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="8dp"
+
+                android:fontFamily="@font/roboto_light"
+                android:textSize="20sp"
+                android:text="printers current action"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -35,3 +35,11 @@ PlatformName=nymea-box
 ## App
 
 transparent color: #80000000
+
+
+
+### ToDo
+
+- automatically connect to the raspberry's wifi
+- feedback engine on button press
+- setup socket activity

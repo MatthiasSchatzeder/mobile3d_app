@@ -2,8 +2,6 @@ package com.example.myapplication
 
 
 import android.content.Intent
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -14,9 +12,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_main.*
 
 var GlobalAuthToken = ""
+var myIOSocket: Socket? = null
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,14 +44,11 @@ class MainActivity : AppCompatActivity() {
          */
 
 
+        /**
+         * call function on Create
+         */
+        getIOSocketConnection()
 
-
-        var ret = HttpClientConnect().execute("<ip of the raspberry / backend>").get()
-        Log.e("test ", "return $ret")
-
-        if(ret == false){
-            setStatusView(2)
-        }
 
 
         /**
@@ -105,6 +102,24 @@ class MainActivity : AppCompatActivity() {
             return@setNavigationItemSelectedListener false
         }
     }//onCreate
+
+    /**
+     * function that calls the HTTPClientConnect async task and defines the variable myIOSocket if
+     * the task was successful.
+     *
+     * TODO: function should probably have a String param for backend IP
+     */
+    fun getIOSocketConnection(){
+        var ret = HttpClientConnect().execute("<ip of the raspberry / backend>").get()
+        Log.e("test ", "return $ret")
+
+        if(ret == false){
+            setStatusView(2)
+        }else{
+            setStatusView(1)
+            myIOSocket = ret as Socket
+        }
+    }
 
     private fun setStatusView(status: Int){
         when(status){
