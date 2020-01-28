@@ -97,6 +97,14 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
 
                 return@setNavigationItemSelectedListener true
+            }else if (item.itemId == R.id.item_scoket){
+                var drawerLayout = drawer_layout
+                drawerLayout.closeDrawers()
+
+                val intent = Intent(this, SocketSetupActivity::class.java)
+                startActivity(intent)
+
+                return@setNavigationItemSelectedListener true
             }
 
             return@setNavigationItemSelectedListener false

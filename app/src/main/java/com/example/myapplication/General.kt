@@ -2,11 +2,14 @@ package com.example.myapplication
 
 
 import android.app.Activity
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_general.view.*
 import java.util.zip.Inflater
@@ -14,6 +17,7 @@ import java.util.zip.Inflater
 
 class General : Fragment() {
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_general, container, false)
 
@@ -23,6 +27,29 @@ class General : Fragment() {
                 hideKeyboard(view)
             }
         }
+
+        /**
+         * action button on click listeners
+         */
+
+        //motors off
+        view.btn_motors_off.setOnClickListener{
+            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+
+        }
+
+        //set fan speed
+        view.btn_set_fan_speed.setOnClickListener{
+            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+
+        }
+
+        //fan off
+        view.btn_fan_off.setOnClickListener{
+            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+
+        }
+
 
         return view
     }

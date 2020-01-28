@@ -55,7 +55,7 @@ class HttpClientConnect : AsyncTask<String, Void, Any?>(){
                     token = JSONObject(response).getString("token")
                     Log.e("test ", token)
 
-                    GlobalAuthToken = token
+                    //GlobalAuthToken = token
                 }
             }
 

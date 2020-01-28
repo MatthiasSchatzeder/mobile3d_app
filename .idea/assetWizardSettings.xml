@@ -130,8 +130,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="ic_dot" />
-                            <entry key="sourceFile" value="D:\dot.svg" />
+                            <entry key="outputName" value="ic_link" />
+                            <entry key="sourceFile" value="D:\link-24px.svg" />
                           </map>
                         </option>
                       </PersistentState>

@@ -1,7 +1,8 @@
 package com.example.myapplication
 
+import android.content.Context
 import android.os.Bundle
-import android.util.Log
+import android.os.Vibrator
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -10,8 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_control.*
 
+var myVib: Vibrator? = null
 
 class ControlActivity : AppCompatActivity() {
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,7 +23,7 @@ class ControlActivity : AppCompatActivity() {
 
         var adapter = FragmentPagerAdapter(supportFragmentManager, lifecycle)
 
-        adapter.addFragment(Axes())
+        adapter.addFragment(Axis())
         adapter.addFragment(Tool())
         adapter.addFragment(General())
 
@@ -43,17 +47,11 @@ class ControlActivity : AppCompatActivity() {
         /**
          * listens to clicks of the Navigation Icon
          */
-        toolbar.setNavigationOnClickListener(View.OnClickListener {
+        toolbar.setNavigationOnClickListener {
             finish()
-        })
+        }
 
-
-        /**
-         * http post request to get auth token from api / backend
-         */
-
-
-
+        myVib = this.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     }// onCreate
 
@@ -67,7 +65,9 @@ class ControlActivity : AppCompatActivity() {
     }
 
 
-
+    /**
+     * on toolbar menu item clicked
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         if(item.itemId == R.id.action_menu){
