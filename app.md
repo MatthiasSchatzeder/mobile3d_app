@@ -46,4 +46,4 @@ transparent color: #80000000
 
 
 - physical feedback on button click need api 26
-  - -> min api to 26
+  - possible solution -> min api to 26 

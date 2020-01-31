@@ -17,6 +17,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 var GlobalAuthToken = ""
 var myIOSocket: Socket? = null
+var RaspiIP: String? = null
 
 class MainActivity : AppCompatActivity() {
 
@@ -59,7 +60,9 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.openDrawer(GravityCompat.START)
         })
 
+
         var navigationView = navigation_view
+
         /**
          * listens to clicks on the Navigation Viewer (sidebar) items
          */

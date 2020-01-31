@@ -19,19 +19,20 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-var bluetoothGatt: BluetoothGatt? = null
 
-/**
- * declare bluetooth gatt service and characteristics
- * wirelessService:     The Wireless Service allows a client to configure and monitor a wireless network connection
- * wirelessCommander:   The connection can be controlled with the Wireless commander characteristic
- * commanderResponse:   Each command sent will generate a response on the Commander response characteristic containing the
- *                      error code for the command
- */
 
 
 class GattOperationsActivity : AppCompatActivity() {
 
+    var bluetoothGatt: BluetoothGatt? = null
+    /**
+     * declare bluetooth gatt service and characteristics
+     * @wirelessService:    The Wireless Service allows a client to configure and monitor a wireless network connection
+     * @wirelessCommander:  The connection can be controlled with the Wireless commander characteristic
+     * @commanderResponse:  Each command sent to the wirelessCommander will generate a response on the CommanderResponse
+     *                      characteristic containing the error code for the command and callback message
+     * @commanderResponseDescriptor:    is used to enable callback messages on the server
+     */
     var wirelessService: BluetoothGattService? = null
     var wirelessCommander: BluetoothGattCharacteristic? = null
     var commanderResponse: BluetoothGattCharacteristic? = null
@@ -41,19 +42,19 @@ class GattOperationsActivity : AppCompatActivity() {
     var sendingQueue: Queue<String> = LinkedList()
     var callbackMsg: String = ""
 
-    var networkNames = ArrayList<String>()
+    private var networkNames = ArrayList<String>()
 
     //declare array adapter
-    var arrayAdapter: ArrayAdapter<String>? = null
+    private var arrayAdapter: ArrayAdapter<String>? = null
 
     /**
      * 0: loading / connecting
      * 1: connected / idle
      * 2: sending
      */
-    var myStatus: Int = 0
+    private var myStatus: Int = 0
 
-    var isConnectingToWifi = false
+    private var isConnectingToWifi = false
 
     override fun onStop() {
         bluetoothGatt?.close()
@@ -71,7 +72,7 @@ class GattOperationsActivity : AppCompatActivity() {
         /**
          * toolbar setup
          */
-        var toolbar = toolbar
+        val toolbar = toolbar
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Wifi Setup"
         toolbar.setNavigationOnClickListener{
@@ -112,11 +113,13 @@ class GattOperationsActivity : AppCompatActivity() {
             //textInput_ssid.setText("ARRIS_24G")
             //textInput_password.setText("1chGebeN1emalsAuf!")
 
-            if(!textInput_ssid.text!!.isEmpty() && !textInput_password.text!!.isEmpty()) {
+            if(textInput_ssid.text!!.isNotEmpty() && textInput_password.text!!.isNotEmpty()) {
                 networkNames.clear()
                 arrayAdapter?.notifyDataSetChanged()
 
                 if (myStatus == 1) {
+
+                    //connect to selected network
                     writeToWirelessCommander("{\"c\":1,\"p\":{\"e\":\"${textInput_ssid.text}\",\"p\":\"${textInput_password.text}\"}}\n")
 
                     textInput_ssid.text!!.clear()
@@ -136,6 +139,7 @@ class GattOperationsActivity : AppCompatActivity() {
                 writeToWirelessCommander("{\"c\":5}\n")
 
                 //wait until sending is done
+                @Suppress("ControlFlowWithEmptyBody")
                 while (myStatus == 2);
 
                 /**
@@ -143,19 +147,20 @@ class GattOperationsActivity : AppCompatActivity() {
                  */
                 val myConnection = JSONObject(callbackMsg).getJSONObject("p")
 
-                var wifi: String
-                var ip: String
+                val wifi: String
+                val ip: String
 
                 if (myConnection.getString("e").isEmpty() && myConnection.getString("i").isEmpty()) {
                     wifi = "No network connected at the moment."
                     ip = "Try to connect again and check password and ssid."
+                    //TODO: call writeToWirelessCommander here -> it will be called as long as ip isn't empty
                 } else {
                     wifi = "WIFI: " + myConnection.getString("e")
                     ip = "IP: " + myConnection.getString("i")
                 }
 
 
-                var builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                val builder: AlertDialog.Builder = AlertDialog.Builder(this)
                 builder.setTitle("Current Connection")
                     .setCancelable(false)
                     .setMessage("$wifi\n$ip")
@@ -178,13 +183,14 @@ class GattOperationsActivity : AppCompatActivity() {
             writeToWirelessCommander("{\"c\":0}\n")
 
             //wait until sending is done
+            @Suppress("ControlFlowWithEmptyBody")
             while (myStatus == 2);
 
             val networks = JSONObject(callbackMsg).getJSONArray("p")
             var i = 0
             if(networks.length() > 0) {
                 while (i < networks.length()) {
-                    var currNetwork: JSONObject = networks.getJSONObject(i)
+                    val currNetwork: JSONObject = networks.getJSONObject(i)
                     networkNames.add(currNetwork.getString("e"))
                     i++
                 }
@@ -201,8 +207,7 @@ class GattOperationsActivity : AppCompatActivity() {
 
     //function that hides the keyboard
     private fun hideKeyboard(activity: Activity) {
-        val imm =
-            activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         //Find the currently focused view, so we can grab the correct window token from it.
         var view = activity.currentFocus
         //If no view currently has focus, create a new one, just so we can grab a window token from it
@@ -228,7 +233,7 @@ class GattOperationsActivity : AppCompatActivity() {
     }
 
     /**
-     * return connection_lost value to previous activity
+     * return to previous activity with connection_lost as result value
      */
     private fun returnConnectionLost(){
         val returnIntent = Intent()
@@ -240,19 +245,28 @@ class GattOperationsActivity : AppCompatActivity() {
     /**
      * splits string into smaller parts and adds it to the sendingQueue
      * chunked: splits string and returns map that can be iterated and the split string parts are added to sendingQueue
-     *          needs to be done (bluetooth gatt can only communicate with 20Bytes per message, size of 10(Bytes) is used for safer communication)
+     *          needs to be done (bluetooth gatt can only communicate with 20Bytes per message, size of 10Bytes per message is used for safer communication)
      */
     private fun writeToWirelessCommander(string: String){
         callbackMsg = ""
         setLoading(true)
 
+        //checks if there is currently no sending operation going on
+        //TODO: check if status || is the right statement, it should probably be &&
         if(sendingQueue.isEmpty() || myStatus == 1) {
             myStatus = 2
+
+            //splits the String into 10 byte packages and adds them to the sending queue
             string.chunked(10).forEach {
                 sendingQueue.add(it)
             }
 
+            //value is set to the first object of the sending queue
+            //.remove() takes out the first object of the sending queue
             wirelessCommander?.value = sendingQueue.remove().toByteArray()
+
+            //if writeCharacteristic() returns false the message cant be written to the characteristic / or sent to the server
+            //then there was an error with the connection and the user should connect again. -> return to the previous activity
             if(bluetoothGatt?.writeCharacteristic(wirelessCommander) == false){
                 returnConnectionLost()
             }
@@ -270,10 +284,12 @@ class GattOperationsActivity : AppCompatActivity() {
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
             when(newState){
                 BluetoothProfile.STATE_CONNECTED ->{
+
                     bluetoothGatt?.discoverServices()
 
                 }
                 BluetoothProfile.STATE_DISCONNECTED ->{
+
                     bluetoothGatt?.close()
 
                     /**
@@ -282,8 +298,6 @@ class GattOperationsActivity : AppCompatActivity() {
                     returnConnectionLost()
                 }
             }
-
-            Log.e("ConStateChnages", "$status $newState")
         }
 
         override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
@@ -315,6 +329,10 @@ class GattOperationsActivity : AppCompatActivity() {
 
                     commanderResponseDescriptor = commanderResponse!!.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"))
 
+                    /**
+                     * write '0100' to the descriptor of the commanderResponse characteristic to enable response callbacks
+                     * on value change
+                     */
                     if(commanderResponseDescriptor != null){
                         commanderResponseDescriptor!!.value = byteArrayOf(0x01, 0x00)
                         bluetoothGatt?.writeDescriptor(commanderResponseDescriptor)
@@ -332,45 +350,50 @@ class GattOperationsActivity : AppCompatActivity() {
         }
 
         /**
-         * callback information
+         * callback if characteristic value changed => callback message from the server
          */
         override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
-            //Log.e("GattCallback ", "characteristic changed(${characteristic?.uuid}): ${characteristic?.value?.toString(Charsets.UTF_8)}")
 
-            var s = characteristic!!.value!!.toString(Charsets.UTF_8)
+            val s = characteristic!!.value!!.toString(Charsets.UTF_8)
 
-            if(s.contains("\n")){
+            if(s.contains("\n")){   //if callback contains '\n' it is the last package of 1 message
                 callbackMsg += s
 
                 Log.e("GattCallback ", callbackMsg)
 
-                val myJSONObject = JSONObject(callbackMsg)
+                val myJSONObject = JSONObject(callbackMsg)  //create JSON object from the callback message
 
-                if(myJSONObject.getInt("c") == 0) { //getNetworks was called
-                    val networks: JSONArray = myJSONObject.getJSONArray("p")
+                when {
+                    myJSONObject.getInt("c") == 0 -> { //getNetworks was called
 
-                    var i = 0
-                    while (i < networks.length()) {
-                        var currNetwork: JSONObject = networks.getJSONObject(i)
-                        Log.e("GattCallback ", currNetwork.getString("e"))
-                        i++
-                    }
-                    setLoading(false)
-                }
-                else if(myJSONObject.getInt("c") == 1){ //connect was called
-                    //added some extra delay for raspi to connect
-                    handler.postDelayed({
+                        val networks: JSONArray = myJSONObject.getJSONArray("p") //get JSON array of networks
+
+                        //debugging output
+                        var i = 0
+                        while (i < networks.length()) {
+                            val currNetwork: JSONObject = networks.getJSONObject(i)
+                            Log.e("GattCallback ", currNetwork.getString("e"))
+                            i++
+                        }
                         setLoading(false)
-                    },2000)
-                }
-                else if(myJSONObject.getInt("c") == 5){ //get connection was called
-                    var myConnection = myJSONObject.getJSONObject("p")
-                    Log.e("GattCallback ", myConnection.getString("i") + "<- ip here if not empty")
-                    setLoading(false)
+                    }
+                    myJSONObject.getInt("c") == 1 -> { //connect to wifi was called
+
+                        //added some extra delay for raspi to connect
+                        handler.postDelayed({
+                            setLoading(false)
+                        },2000)
+                    }
+                    myJSONObject.getInt("c") == 5 -> { //get connection was called
+
+                        //debugging output
+                        val myConnection = myJSONObject.getJSONObject("p")
+                        Log.e("GattCallback ", myConnection.getString("i") + "<- ip here if not empty")
+                        setLoading(false)
+                    }
                 }
 
                 myStatus = 1
-
 
             }else{
                 callbackMsg += s
@@ -384,11 +407,13 @@ class GattOperationsActivity : AppCompatActivity() {
         override fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
             Log.e("GattCallback ", "writeCallback $status")
 
+            //send next package if sending queue is not empty AND
+            //status from the last send operation is 0 (-> operation was successful)
+            //TODO: error handling if last send operation was not successful (status != 0)
             if(!sendingQueue.isEmpty() && status == 0){
                 wirelessCommander?.value = sendingQueue.remove().toByteArray()
                 bluetoothGatt?.writeCharacteristic(wirelessCommander)
             }
         }
-
     } //gattCallback
 }

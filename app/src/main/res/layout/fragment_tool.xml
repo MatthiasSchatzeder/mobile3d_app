@@ -71,8 +71,6 @@
                 android:insetBottom="0dp"
         />
 
-
-
     </RelativeLayout>
 
     <!-- Divider -->

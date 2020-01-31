@@ -39,7 +39,7 @@
 
     <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/toolbar_height"
             android:id="@+id/text_input_ip"
             android:hint="ip of the raspberry"
             android:inputType="number|numberDecimal"
@@ -47,5 +47,21 @@
 
             />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_height"
+            android:id="@+id/btn_save_changes"
+            android:text="save changes"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+
+            app:cornerRadius="30sp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:layout_margin="32dp"
+        />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -47,7 +47,6 @@ class SocketSetupActivity : AppCompatActivity() {
             return true
         }
 
-
         return super.onOptionsItemSelected(item)
     }
 }
