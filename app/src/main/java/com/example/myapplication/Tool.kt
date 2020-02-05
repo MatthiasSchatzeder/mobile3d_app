@@ -1,31 +1,24 @@
 package com.example.myapplication
 
 
-import android.content.Context
+import android.app.Activity
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_tool.*
 import kotlinx.android.synthetic.main.fragment_tool.view.*
-import kotlinx.android.synthetic.main.fragment_tool.view.text_input_distance
-import kotlin.math.absoluteValue
-import android.app.Activity
-import android.os.Build
-import android.os.VibrationEffect
-import android.view.inputmethod.InputMethodManager
-import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.getSystemService
-
-
 
 
 class Tool : Fragment() {
 
+    //TODO change min APi to 26 to fix deprecated error
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_tool, container, false)
@@ -104,7 +97,7 @@ class Tool : Fragment() {
     /**
      * function that hides the keyboard
      */
-    fun hideKeyboard(view: View){
+    private fun hideKeyboard(view: View){
         val inputMethodManager: InputMethodManager = context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }

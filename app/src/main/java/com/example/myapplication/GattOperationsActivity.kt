@@ -136,11 +136,15 @@ class GattOperationsActivity : AppCompatActivity() {
             if(!isConnectingToWifi) {
                 hideKeyboard(this)
 
-                writeToWirelessCommander("{\"c\":5}\n")
+                //TODO this asks the current connection of the server as long as the callback is empty -> needs to be tested
+                do {
+                    writeToWirelessCommander("{\"c\":5}\n")
 
-                //wait until sending is done
-                @Suppress("ControlFlowWithEmptyBody")
-                while (myStatus == 2);
+                    //wait until sending is done
+                    @Suppress("ControlFlowWithEmptyBody")
+                    while (myStatus == 2);
+
+                }while (callbackMsg.length < 60)
 
                 /**
                  * open alert dialog with connection information
@@ -153,10 +157,12 @@ class GattOperationsActivity : AppCompatActivity() {
                 if (myConnection.getString("e").isEmpty() && myConnection.getString("i").isEmpty()) {
                     wifi = "No network connected at the moment."
                     ip = "Try to connect again and check password and ssid."
-                    //TODO: call writeToWirelessCommander here -> it will be called as long as ip isn't empty
                 } else {
                     wifi = "WIFI: " + myConnection.getString("e")
                     ip = "IP: " + myConnection.getString("i")
+
+                    //sets global variable to raspberry ip
+                    BackendIP = myConnection.getString("i")
                 }
 
 

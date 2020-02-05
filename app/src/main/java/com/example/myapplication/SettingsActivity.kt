@@ -1,10 +1,8 @@
 package com.example.myapplication
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_settings.*
 
 class SettingsActivity : AppCompatActivity() {
@@ -13,20 +11,25 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-
-        var toolbar = toolbar
+        /**
+         * toolbar init
+         */
+        val toolbar = toolbar
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Settings"
 
-        toolbar.setNavigationOnClickListener(View.OnClickListener {
+        toolbar.setNavigationOnClickListener {
             finish()
-        })
+        }
 
+        //val notificationSwitch = switch_notifications
 
-        var notificationSwitch = switch_notifications
-
-        notificationSwitch.setOnClickListener {
-            if(notificationSwitch.isChecked){
+        /**
+         * notification switch to turn on notifications
+         * TODO background notifications
+         */
+        switch_notifications.setOnClickListener {
+            if(switch_notifications.isChecked){
                 Toast.makeText(this, "Notifications ON", Toast.LENGTH_SHORT).show()
             }
             else{

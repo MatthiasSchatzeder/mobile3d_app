@@ -13,7 +13,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 
-class HttpClientConnect : AsyncTask<String, Void, Any?>(){
+class ConnectSocketAsyncTask : AsyncTask<String, Void, Any?>(){
 
 
     var reqParam = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode("aapp", "UTF-8") +
@@ -22,9 +22,16 @@ class HttpClientConnect : AsyncTask<String, Void, Any?>(){
 
     override fun doInBackground(vararg p0: String): Any? {
 
-        val url = URL("http://${p0[0]}:4000/api/v1/auth/login")
+        //url of the backend auth -> needed to get the auth bearer token
+        val authURL = URL("http://${p0[0]}:4000/api/v1/auth/login")
+
+        //url of the backend -> needed for the socketIO connection
+        val socketURL = "http://${p0[0]}:4000"
+
+        //bearer auth token -> needed for the socketIO connection
         var token = ""
-        Log.e("test ", "post request to this url $url")
+
+        Log.e("test ", "post request to this url $authURL")
 
 
         try {
@@ -32,7 +39,7 @@ class HttpClientConnect : AsyncTask<String, Void, Any?>(){
             /**
              * get auth token with http post request
              */
-            with(url.openConnection() as HttpURLConnection) {
+            with(authURL.openConnection() as HttpURLConnection) {
                 requestMethod = "POST"
 
                 val wr = OutputStreamWriter(outputStream)
@@ -40,7 +47,6 @@ class HttpClientConnect : AsyncTask<String, Void, Any?>(){
                 wr.flush()
 
                 Log.e("test ", "response: $responseCode + $responseMessage")
-
 
                 BufferedReader(InputStreamReader(inputStream)).use {
                     var response = ""
@@ -55,7 +61,6 @@ class HttpClientConnect : AsyncTask<String, Void, Any?>(){
                     token = JSONObject(response).getString("token")
                     Log.e("test ", token)
 
-                    //GlobalAuthToken = token
                 }
             }
 
@@ -65,7 +70,7 @@ class HttpClientConnect : AsyncTask<String, Void, Any?>(){
             val opts = IO.Options()
             opts.query = "token=Bearer $token"
             Log.e("test ", "" + opts.query)
-            val socket: Socket = IO.socket("http://192.168.83.16:4000", opts)
+            val socket: Socket = IO.socket(socketURL, opts)
 
             socket.connect()
                 .on(Socket.EVENT_CONNECT) {
@@ -79,7 +84,7 @@ class HttpClientConnect : AsyncTask<String, Void, Any?>(){
 
         }catch (exc: Exception){
             Log.e("test ", "URL not reachable")
-            return false
+            return null
         }
 
 

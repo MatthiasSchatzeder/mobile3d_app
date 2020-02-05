@@ -45,6 +45,7 @@
             android:inputType="number|numberDecimal"
             android:digits="1234567890."
 
+
             />
     </com.google.android.material.textfield.TextInputLayout>
 

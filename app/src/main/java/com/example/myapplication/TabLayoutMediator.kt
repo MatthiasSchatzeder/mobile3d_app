@@ -69,8 +69,7 @@ class TabLayoutMediator(
         tabLayout: TabLayout,
         viewPager: ViewPager2,
         onConfigureTabCallback: OnConfigureTabCallback
-    ) : this(tabLayout, viewPager, true, onConfigureTabCallback) {
-    }
+    ) : this(tabLayout, viewPager, true, onConfigureTabCallback)
 
     /**
      * Link the TabLayout and the ViewPager2 together.

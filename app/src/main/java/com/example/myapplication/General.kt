@@ -50,13 +50,12 @@ class General : Fragment() {
 
         }
 
-
         return view
     }
 
     //function that hides the keyboard
     fun hideKeyboard(view: View){
-        var inputMethodManager: InputMethodManager = context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputMethodManager: InputMethodManager = context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
