@@ -5,10 +5,8 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -22,6 +20,8 @@ var BackendIP: String = ""
 
 class MainActivity : AppCompatActivity() {
 
+    val handler = Handler()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -34,7 +34,9 @@ class MainActivity : AppCompatActivity() {
         /**
          * call function to get SocketIO connection on Create
          */
-        getIOSocketConnection()
+        handler.postDelayed({   //postDelayed for testing // not really working
+            getIOSocketConnection("test-ip")
+        }, 3000)
 
 
         /**
@@ -46,7 +48,6 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        //val navigationView = navigation_view
         /**
          * listens to clicks on the Navigation Viewer (sidebar) items
          */
@@ -107,10 +108,11 @@ class MainActivity : AppCompatActivity() {
     /**
      * function that calls the ConnectSocket async task and defines the variable myIOSocket if
      * the task was successful.
+     *
+     * @param ip String of the ip the app should try to connect to
      */
-    private fun getIOSocketConnection(){
-        val ret = ConnectSocketAsyncTask().execute("<ip of the raspberry / backend>").get()
-        //Log.e("test ", "return $ret")
+    private fun getIOSocketConnection(ip: String){
+        val ret = ConnectSocketAsyncTask().execute(ip).get()
 
         if(ret == null){
             setStatusView(2)

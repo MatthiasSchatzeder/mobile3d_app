@@ -42,6 +42,8 @@ class ConnectSocketAsyncTask : AsyncTask<String, Void, Any?>(){
             with(authURL.openConnection() as HttpURLConnection) {
                 requestMethod = "POST"
 
+                connectTimeout = 5000   //set connect timeout to 5s
+
                 val wr = OutputStreamWriter(outputStream)
                 wr.write(reqParam)
                 wr.flush()
@@ -59,8 +61,7 @@ class ConnectSocketAsyncTask : AsyncTask<String, Void, Any?>(){
                     it.close()
 
                     token = JSONObject(response).getString("token")
-                    Log.e("test ", token)
-
+                    //Log.e("test ", token)
                 }
             }
 
