@@ -3,10 +3,12 @@ package com.example.myapplication
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -14,29 +16,56 @@ import androidx.core.view.GravityCompat
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_main.*
 
+/**
+ * [maybe not necessary]
+ * @GlobalAuthToken: global Variable with the auth bearer token needed for the socketIO connection / authentication
+ *
+ * @myIOSocket: SocketIO object that is used to communicate with the backend
+ *
+ * [maybe not necessary]
+ * @BackendIP: String with the BackendIP (can be set manually or automatically by connecting the raspberry to a wifi via BLE)
+ */
 var GlobalAuthToken = ""
-var myIOSocket: Socket? = null
+var MyIOSocket: Socket? = null
 var BackendIP: String = ""
+
+/**
+ * SharedPref object to access the local stored shared preferences data
+ */
+var SharedPref: SharedPreferences? = null
 
 class MainActivity : AppCompatActivity() {
 
-    val handler = Handler()
+    private val handler = Handler()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //init toolbar
+        /**
+         * init toolbar
+         */
         val toolbar = toolbar
         setSupportActionBar(toolbar)
 
+        /**
+         * create a sharedPref object of the "mobile3d.preferences_ip" file
+         */
+        SharedPref = getSharedPreferences("mobile3d.preferences_ip", MODE_PRIVATE)
+        
+        setLoading(true)
 
         /**
-         * call function to get SocketIO connection on Create
+         * call function to get socketIO connection
+         *
+         * delay 100ms to achieve that the loading animation shows up
+         *      if the getIOSocketConnection is called directly the sharedPreference getString function needs some time
+         *      and freezes the UI / activity
          */
-        handler.postDelayed({   //postDelayed for testing // not really working
-            getIOSocketConnection("test-ip")
-        }, 3000)
+        handler.postDelayed({
+            getIOSocketConnection()
+        }, 100)
 
 
         /**
@@ -108,17 +137,33 @@ class MainActivity : AppCompatActivity() {
     /**
      * function that calls the ConnectSocket async task and defines the variable myIOSocket if
      * the task was successful.
-     *
-     * @param ip String of the ip the app should try to connect to
      */
-    private fun getIOSocketConnection(ip: String){
-        val ret = ConnectSocketAsyncTask().execute(ip).get()
+    private fun getIOSocketConnection(){
+        val ip = SharedPref!!.getString("ip", "")
 
-        if(ret == null){
-            setStatusView(2)
+        if(ip!!.isNotEmpty()){
+
+            val ret = ConnectSocketAsyncTask().execute(ip).get()
+
+            if(ret == null){
+                setStatusView(2)
+            }else{
+                setStatusView(1)
+                MyIOSocket = ret as Socket
+            }
         }else{
-            setStatusView(1)
-            myIOSocket = ret as Socket
+            setStatusView(3)
+        }
+        setLoading(false)
+    }
+
+    private fun setLoading(enabled: Boolean){
+        if(enabled){
+            progress_bar.visibility = View.VISIBLE //enable progress bar
+            loading_view.visibility = View.VISIBLE //enable grey background
+        }else{
+            progress_bar.visibility = View.INVISIBLE //disable progress bar
+            loading_view.visibility = View.INVISIBLE //disable grey background
         }
     }
 
@@ -142,6 +187,10 @@ class MainActivity : AppCompatActivity() {
                 textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorRed))
                 //textView_status.background = ColorDrawable(ContextCompat.getColor(this, R.color.colorRed))
                 textView_status.text = "offline / not reachable"
+            }
+            3->{
+                textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorLightGrey))
+                textView_status.text = "no ip specified"
             }
         }
     }

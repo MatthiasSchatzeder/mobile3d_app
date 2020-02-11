@@ -1,9 +1,11 @@
 package com.example.myapplication
 
+import android.content.SharedPreferences
 import android.os.AsyncTask
 import android.util.Log
 import io.socket.client.IO
 import io.socket.client.Socket
+import kotlinx.android.synthetic.main.activity_socket_setup.*
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -16,6 +18,9 @@ import java.net.URLEncoder
 class ConnectSocketAsyncTask : AsyncTask<String, Void, Any?>(){
 
 
+    /**
+     * reqParam are the params for the HTTP request
+     */
     var reqParam = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode("aapp", "UTF-8") +
             "&" + URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode("test", "UTF-8")
 
@@ -42,7 +47,7 @@ class ConnectSocketAsyncTask : AsyncTask<String, Void, Any?>(){
             with(authURL.openConnection() as HttpURLConnection) {
                 requestMethod = "POST"
 
-                connectTimeout = 5000   //set connect timeout to 5s
+                connectTimeout = 2000   //set connect timeout to 5s
 
                 val wr = OutputStreamWriter(outputStream)
                 wr.write(reqParam)
@@ -89,6 +94,7 @@ class ConnectSocketAsyncTask : AsyncTask<String, Void, Any?>(){
         }
 
 
-    }
+    }   //doInBackground
+
 
 }

@@ -55,12 +55,39 @@
             android:text="save changes"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_input_layout_ip"
+            android:elevation="2dp"
 
             app:cornerRadius="30sp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:layout_margin="32dp"
         />
+
+
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/colorWhite"
+            app:layout_constraintTop_toBottomOf="@id/appbar_layout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:elevation="5dp"
+            android:id="@+id/loading_view"
+            android:visibility="invisible"
+            />
+    <androidx.core.widget.ContentLoadingProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:progressBarStyleLarge"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:indeterminateTint="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:elevation="10dp"
+            android:visibility="invisible"
+            />
 
 
 

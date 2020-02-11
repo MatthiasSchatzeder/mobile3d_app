@@ -1,17 +1,20 @@
 package com.example.myapplication
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
 import android.util.Patterns
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.TextView
+import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_socket_setup.*
 
 class SocketSetupActivity : AppCompatActivity() {
+
+    val handler = Handler()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,7 +22,7 @@ class SocketSetupActivity : AppCompatActivity() {
 
 
         //init toolbar
-        var toolbar = toolbar
+        val toolbar = toolbar
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Socket Config"
 
@@ -31,35 +34,70 @@ class SocketSetupActivity : AppCompatActivity() {
         }
 
         /**
+         * create a sharedPref object of the "mobile3d.preferences_ip" file
+         */
+        //val sharedPref = getSharedPreferences("mobile3d.preferences_ip", MODE_PRIVATE)
+        val editor = SharedPref!!.edit()
+
+        /**
+         * sets text input field to the stored ip of the sharedPref / of no ip is stored it is set to an empty string ("")
+         */
+        text_input_ip.setText(SharedPref!!.getString("ip", ""))
+
+        /**
          * on btn save changes click listener
          *
          * checks if ip input format is valid, then calls ConnectSocketAsyncTask
          */
         btn_save_changes.setOnClickListener{
-            val ip = text_input_ip.text.toString()
-            if(Patterns.IP_ADDRESS.matcher(ip).matches()){
-                text_input_ip.error = null
-                BackendIP = ip
+            setLoading(true)
+            handler.postDelayed({
+                val ip = text_input_ip.text.toString()
 
-                var ret = ConnectSocketAsyncTask().execute(ip).get()
-                Log.e("test ", " $ret")
-                if(ret != null){
-                    myIOSocket = ret as Socket
+                if(Patterns.IP_ADDRESS.matcher(ip).matches()){
 
-                    displayConnectionMsg(true)
+                    text_input_ip.error = null
+                    BackendIP = ip
 
-                    //all successfully done return to main activity
-                    finish()
+                    val ret = ConnectSocketAsyncTask().execute(ip).get()
+                    //Log.e("test ", " $ret")
+
+                    if(ret != null){
+                        MyIOSocket = ret as Socket
+
+                        displayConnectionMsg(true)
+
+                        //all successfully done return to main activity
+                        finish()
+                    }else{
+                        displayConnectionMsg(false)
+                    }
+
+                    /**
+                     * writes ip to the sharedPreference
+                     */
+                    editor.putString("ip", ip)
+                    editor.apply()
+
                 }else{
-                    displayConnectionMsg(false)
+                    text_input_ip.error = "wrong ip format"
                 }
+                setLoading(false)
+            }, 10)
 
-            }else{
-                text_input_ip.error = "wrong ip format"
-            }
-        }
+        }   //btn listener
 
     } //onCreate
+
+    private fun setLoading(enabled: Boolean){
+        if(enabled){
+            progress_bar.visibility = View.VISIBLE //enable progress bar
+            loading_view.visibility = View.VISIBLE //enable grey background
+        }else{
+            progress_bar.visibility = View.INVISIBLE //disable progress bar
+            loading_view.visibility = View.INVISIBLE //disable grey background
+        }
+    }
 
     /**
      * toolbar menu init
