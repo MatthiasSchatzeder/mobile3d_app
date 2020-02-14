@@ -38,7 +38,6 @@ class ConnectSocketAsyncTask : AsyncTask<String, Void, Any?>(){
 
         Log.e("test ", "post request to this url $authURL")
 
-
         try {
 
             /**

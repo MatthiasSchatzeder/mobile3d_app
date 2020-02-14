@@ -213,8 +213,17 @@ class BluetoothLeActivity: AppCompatActivity() {
                 /**
                  * Alert Dialog
                  */
-                var builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                val builder: AlertDialog.Builder = AlertDialog.Builder(this)
                 builder.setMessage("Connection lost, try again.")
+                    .setCancelable(false)
+                    .setPositiveButton("OK") { _: DialogInterface, _: Int ->
+                        //nothing else happens
+                    }
+                val alert = builder.create()
+                alert.show()
+            }else if(data?.getStringExtra("result").equals("wrong_device")){
+                val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                builder.setMessage("device is not supported")
                     .setCancelable(false)
                     .setPositiveButton("OK") { _: DialogInterface, _: Int ->
                         //nothing else happens
