@@ -177,6 +177,7 @@ class MainActivity : AppCompatActivity() {
                 textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorLightGrey))
                 //textView_status.background = ColorDrawable(ContextCompat.getColor(this, R.color.colorLightGrey))
                 textView_status.text = "connecting"
+                textView_current_action.text = "-"
             }
             1->{
                 textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorGreen))
@@ -187,10 +188,12 @@ class MainActivity : AppCompatActivity() {
                 textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorRed))
                 //textView_status.background = ColorDrawable(ContextCompat.getColor(this, R.color.colorRed))
                 textView_status.text = "offline / not reachable"
+                textView_current_action.text = "-"
             }
             3->{
                 textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorLightGrey))
                 textView_status.text = "no ip specified"
+                textView_current_action.text = "-"
             }
         }
     }

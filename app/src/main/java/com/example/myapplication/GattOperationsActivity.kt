@@ -1,12 +1,9 @@
 package com.example.myapplication
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.bluetooth.*
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.text.Html
 import android.util.Log
 import android.util.Patterns
 import android.view.View
@@ -15,12 +12,12 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.android.synthetic.main.activity_gatt_connect.*
-import kotlinx.android.synthetic.main.fragment_general.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.Default
-import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
@@ -43,7 +40,6 @@ class GattOperationsActivity : AppCompatActivity() {
     var commanderResponse: BluetoothGattCharacteristic? = null
     var commanderResponseDescriptor: BluetoothGattDescriptor? = null
 
-    private val handler: Handler = Handler()
     var sendingQueue: Queue<String> = LinkedList()
     var callbackMsg: String = ""
 
@@ -251,14 +247,13 @@ class GattOperationsActivity : AppCompatActivity() {
                 BackendIP = myConnection.getString("i")
             }
 
-
-            val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-            builder.setTitle("Current Connection")
-                .setCancelable(false)
+            val builder = MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_MaterialComponents_MaterialAlertDialog_Centered)
+                .setTitle("Current Connection")
                 .setMessage(HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_LEGACY))
-                .setPositiveButton("OK") { _, _ ->
-                    //do nothing on ok
+                .setPositiveButton("OK"){ _, _ ->
+                    //do nothing on OK
                 }
+
 
             val alertDialog = builder.create()
             alertDialog.show()

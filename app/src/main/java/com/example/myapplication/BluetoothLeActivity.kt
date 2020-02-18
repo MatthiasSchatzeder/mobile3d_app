@@ -2,7 +2,6 @@ package com.example.myapplication
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
@@ -24,6 +23,7 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.android.synthetic.main.activity_bluetooth_le.*
 
 
@@ -185,14 +185,14 @@ class BluetoothLeActivity: AppCompatActivity() {
      */
     private fun checkEnableGPS(){
         if (!locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER)!!) {
-        var builder: AlertDialog.Builder = AlertDialog.Builder(this)
-        builder.setMessage("GPS is disabled!\nScanning for devices does not work without location tracking enabled")
-        .setCancelable(false)
-        .setPositiveButton("OK") { _: DialogInterface, _: Int ->
-            var intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+        var builder = MaterialAlertDialogBuilder(this)
+            .setMessage("GPS is disabled!\nScanning for devices does not work without location tracking enabled")
+            .setCancelable(false)
+            .setPositiveButton("OK") { _: DialogInterface, _: Int ->
+                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivity(intent)
         }
-        val alert: AlertDialog = builder.create()
+        val alert = builder.create()
         alert.show()
         }
     }
@@ -213,8 +213,8 @@ class BluetoothLeActivity: AppCompatActivity() {
                 /**
                  * Alert Dialog
                  */
-                val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-                builder.setMessage("Connection lost, try again.")
+                val builder = MaterialAlertDialogBuilder(this)
+                    .setMessage("Connection lost, try again.")
                     .setCancelable(false)
                     .setPositiveButton("OK") { _: DialogInterface, _: Int ->
                         //nothing else happens
@@ -222,8 +222,8 @@ class BluetoothLeActivity: AppCompatActivity() {
                 val alert = builder.create()
                 alert.show()
             }else if(data?.getStringExtra("result").equals("wrong_device")){
-                val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-                builder.setMessage("device is not supported")
+                val builder = MaterialAlertDialogBuilder(this)
+                    .setMessage("device is not supported")
                     .setCancelable(false)
                     .setPositiveButton("OK") { _: DialogInterface, _: Int ->
                         //nothing else happens
