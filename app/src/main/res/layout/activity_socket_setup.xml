@@ -4,7 +4,9 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".SocketSetupActivity">
+        tools:context=".SocketSetupActivity"
+        android:id="@+id/setup_socket_layout"
+        >
 
     <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar_layout"

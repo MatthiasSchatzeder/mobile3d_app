@@ -8,8 +8,12 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_socket_setup.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
 
 class SocketSetupActivity : AppCompatActivity() {
 
@@ -50,41 +54,46 @@ class SocketSetupActivity : AppCompatActivity() {
          * checks if ip input format is valid, then calls ConnectSocketAsyncTask
          */
         btn_save_changes.setOnClickListener{
+
             setLoading(true)
+
             handler.postDelayed({
                 val ip = text_input_ip.text.toString()
 
                 if(Patterns.IP_ADDRESS.matcher(ip).matches()){
 
                     text_input_ip.error = null
-                    BackendIP = ip
 
-                    val ret = ConnectSocketAsyncTask().execute(ip).get()
+                    val ret = GetAuthTokenAsyncTask().execute(ip).get()
                     //Log.e("test ", " $ret")
 
                     if(ret != null){
-                        MyIOSocket = ret as Socket
 
-                        displayConnectionMsg(true)
+                        /**
+                         * writes ip to the sharedPreference
+                         * editor.apply instead of .commit to prevent ui thread from freezing
+                         */
+                        editor.putString("ip", ip)
+                        editor.apply()
 
-                        //all successfully done return to main activity
-                        finish()
+                        /**
+                         * delay before finish is called so that editor.apply() got some more time to finish
+                         */
+                        handler.postDelayed({
+                            setLoading(false)
+                            finish()
+                        }, 2000)
+
                     }else{
-                        displayConnectionMsg(false)
+                        setLoading(false)
+                        Snackbar.make(it, "ip not reachable", Snackbar.LENGTH_SHORT).show()
                     }
-
-                    /**
-                     * writes ip to the sharedPreference
-                     */
-                    editor.putString("ip", ip)
-                    editor.apply()
-
                 }else{
+                    setLoading(false)
                     text_input_ip.error = "wrong ip format"
                 }
-                setLoading(false)
-            }, 10)
 
+            }, 50)
         }   //btn listener
 
     } //onCreate
@@ -107,25 +116,6 @@ class SocketSetupActivity : AppCompatActivity() {
         return true
     }
 
-    /**
-     * displays an connection status toast
-     * TODO: toast looks very ugly -> fix
-     */
-    private fun displayConnectionMsg(connected: Boolean){
-        if(connected){
-            val toast = Toast.makeText(this, "connected", Toast.LENGTH_LONG)
-            val view = toast.view
-
-            view.setBackgroundResource(R.color.colorGreen)
-            toast.show()
-        }else{
-            val toast = Toast.makeText(this, "ip not reachable", Toast.LENGTH_LONG)
-            val view = toast.view
-
-            view.setBackgroundResource(R.color.colorRed)
-            toast.show()
-        }
-    }
 
     /**
      * on toolbar menu item clicked

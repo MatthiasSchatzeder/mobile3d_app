@@ -28,7 +28,7 @@ class Axis : Fragment() {
          * test connection
          */
         val opts = IO.Options()
-        opts.query = "token=Bearer $GlobalAuthToken"
+        opts.query = "token=Bearer $MyAuthToken"
         Log.e("test ", "" + opts.query)
         val socket: Socket = IO.socket("http://192.168.83.16:4000", opts)
 
@@ -70,11 +70,11 @@ class Axis : Fragment() {
         view.btn_up.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
-            socket.emit("moveForward", distance.toString(), Ack{
-                it.forEach {msg: Any ->
+            socket?.emit("moveForward", distance.toString(), Ack{callback: Array<Any> ->
+                callback.forEach {msg: Any ->
                     Log.e("test ", msg.toString())
                 }
-                //Log.e("test ", it.toString())
+                Log.e("socketIOACK", it.toString())
             })
         }
 

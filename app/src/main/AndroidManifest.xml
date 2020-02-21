@@ -27,7 +27,9 @@
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true"
             tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".SocketSetupActivity" />
+        <activity android:name=".SocketSetupActivity"
+                android:windowSoftInputMode="adjustResize"
+                />
         <activity android:name=".GattOperationsActivity" />
         <activity android:name=".BluetoothLeActivity" />
         <activity android:name=".SettingsActivity" />
@@ -36,7 +38,10 @@
                 android:screenOrientation="portrait"
                 android:usesCleartextTraffic="true"
                 android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+                android:windowSoftInputMode="adjustResize"
+                >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

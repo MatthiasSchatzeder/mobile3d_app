@@ -10,10 +10,11 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint_layout"
+            android:id="@+id/constraint_layout_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".MainActivity">
+            tools:context=".MainActivity"
+            >
 
         <com.google.android.material.appbar.AppBarLayout
                 android:id="@+id/appbar_layout"
@@ -71,17 +72,33 @@
                 android:text="connecting"
                 android:textColor="@color/colorBlack"
                 android:textSize="20sp"
+                android:layout_marginBottom="0dp"
 
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/appbar_layout" />
+
+        <TextView
+                android:id="@+id/textView_ip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_light"
+                android:gravity="center"
+                android:text=""
+                android:textColor="@color/colorBlack"
+                android:textSize="15sp"
+
+                app:layout_goneMarginTop="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textView_status" />
 
         <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textView_status"
+                app:layout_constraintTop_toBottomOf="@id/textView_ip"
                 android:id="@+id/divider_dot"
 
                 android:src="@drawable/ic_dot"
@@ -102,6 +119,19 @@
                 android:fontFamily="@font/roboto_light"
                 android:textSize="20sp"
                 android:text="printers current action"
+            />
+
+        <com.google.android.material.button.MaterialButton
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/toolbar_height"
+                android:id="@+id/btn_refresh"
+                android:text="refresh"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -13,8 +14,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import com.google.android.material.snackbar.Snackbar
+import io.socket.client.IO
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * [maybe not necessary]
@@ -25,9 +32,10 @@ import kotlinx.android.synthetic.main.activity_main.*
  * [maybe not necessary]
  * @BackendIP: String with the BackendIP (can be set manually or automatically by connecting the raspberry to a wifi via BLE)
  */
-var GlobalAuthToken = ""
-var MyIOSocket: Socket? = null
+var MyAuthToken = ""
+//var MyIOSocket: Socket? = null
 var BackendIP: String = ""
+
 
 /**
  * SharedPref object to access the local stored shared preferences data
@@ -36,7 +44,20 @@ var SharedPref: SharedPreferences? = null
 
 class MainActivity : AppCompatActivity() {
 
+    private var socket: Socket? = null
+
     private val handler = Handler()
+
+    override fun onRestart() {
+        CoroutineScope(Main).launch {
+            socketIOConnect()
+        }
+
+        /*finish()
+        startActivity(intent)*/
+
+        super.onRestart()
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,19 +74,16 @@ class MainActivity : AppCompatActivity() {
          * create a sharedPref object of the "mobile3d.preferences_ip" file
          */
         SharedPref = getSharedPreferences("mobile3d.preferences_ip", MODE_PRIVATE)
-        
-        setLoading(true)
+
 
         /**
-         * call function to get socketIO connection
-         *
-         * delay 100ms to achieve that the loading animation shows up
-         *      if the getIOSocketConnection is called directly the sharedPreference getString function needs some time
-         *      and freezes the UI / activity
+         * TODO DOKU
          */
-        handler.postDelayed({
-            getIOSocketConnection()
-        }, 100)
+        CoroutineScope(Main).launch {
+            socketIOConnect()
+        }
+
+
 
 
         /**
@@ -76,6 +94,14 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.openDrawer(GravityCompat.START)
         }
 
+        btn_refresh.setOnClickListener {
+            //snackbar test
+            Snackbar.make(constraint_layout_main, "connection error - try to refresh", Snackbar.LENGTH_SHORT).show()
+
+            /*CoroutineScope(Main).launch {
+                socketIOConnect()
+            }*/
+        }
 
         /**
          * listens to clicks on the Navigation Viewer (sidebar) items
@@ -137,25 +163,111 @@ class MainActivity : AppCompatActivity() {
     /**
      * function that calls the ConnectSocket async task and defines the variable myIOSocket if
      * the task was successful.
+     *
+     * TODO removable
      */
-    private fun getIOSocketConnection(){
+    private fun getAuthToken() {
         val ip = SharedPref!!.getString("ip", "")
 
         if(ip!!.isNotEmpty()){
 
-            val ret = ConnectSocketAsyncTask().execute(ip).get()
+            val ret = GetAuthTokenAsyncTask().execute(ip).get()
 
-            if(ret == null){
-                setStatusView(2)
-            }else{
-                setStatusView(1)
-                MyIOSocket = ret as Socket
+            if (ret != null) {
+                MyAuthToken = ret as String
             }
-        }else{
-            setStatusView(3)
         }
-        setLoading(false)
     }
+
+    /**
+     *  TODO DOKU
+     */
+    private suspend fun socketIOConnect() {
+        setLoading(true)
+        var myStatus = 0
+
+        delay(100)
+
+            val ip = SharedPref!!.getString("ip", "")
+
+
+            if (ip!!.isNotEmpty()) {
+
+                if (MyAuthToken.isEmpty()) {
+
+                    val ret = GetAuthTokenAsyncTask().execute(ip).get()
+
+                    if (ret != null) {
+                        MyAuthToken = ret as String
+                    }
+                }
+
+                if (MyAuthToken.isNotEmpty()) {
+
+                    val opts = IO.Options()
+                    opts.forceNew = true
+                    opts.timeout = 1800
+                    opts.multiplex = false
+                    opts.query = "token=Bearer $MyAuthToken"
+
+                    Log.e("test ", opts.query)
+
+                    socket = IO.socket("http://$ip:4000", opts)
+
+                    socket!!.connect()
+                        .on(Socket.EVENT_CONNECT) {
+                            Log.e("test ", "connected")
+                            myStatus = 1
+//                            if (getStatus() != 1) {
+//                                setStatusView(1)
+//                            }
+                        }
+                        .on(Socket.EVENT_DISCONNECT) {
+                            Log.e("test ", "disconnected")
+                            myStatus = 2
+//                            if (getStatus() != 2) {
+//                                setStatusView(2)
+//                            }
+                            Snackbar.make(window.decorView.rootView, "connection error - try to refresh", Snackbar.LENGTH_SHORT).show()
+                        }
+                        .on(Socket.EVENT_CONNECT_ERROR) {
+                            Log.e("test ", "connect_error")
+                            myStatus = 2
+                            /*if (getStatus() != 2) {
+                                setStatusView(2)
+                            }*/
+                        }
+                        .on(Socket.EVENT_CONNECT_TIMEOUT) {
+                            Log.e("test ", "connect_timeout")
+                            myStatus = 2
+                            /*if (getStatus() != 2) {
+                                setStatusView(2)
+                            }*/
+                        }
+
+                    delay(2000)
+
+                    when(myStatus){
+                        1->{
+                            Log.e("test ", "set connected")
+                            setStatusView(1)
+                        }
+                        2->{
+                            Log.e("test ", "set disconnected")
+                            setStatusView(2)
+                        }
+                    }
+
+                } else {    //MyAuthToken is empty
+                    setStatusView(2)
+                }
+            } else {    //ip from shared Preference is empty -> no ip specified
+                setStatusView(3)
+            }
+
+            setLoading(false)
+
+    }   //socketIOConnect
 
     private fun setLoading(enabled: Boolean){
         if(enabled){
@@ -170,32 +282,55 @@ class MainActivity : AppCompatActivity() {
     /**
      * function that sets the status view
      */
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n")    //suppress string value warning
     private fun setStatusView(status: Int){
         when(status){
             0->{
                 textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorLightGrey))
-                //textView_status.background = ColorDrawable(ContextCompat.getColor(this, R.color.colorLightGrey))
-                textView_status.text = "connecting"
+                textView_status.setText("connecting")
                 textView_current_action.text = "-"
+                textView_ip.text = ""
             }
             1->{
                 textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorGreen))
-                //textView_status.background = ColorDrawable(ContextCompat.getColor(this, R.color.colorGreen))
-                textView_status.text = "connected"
+                setLoading(false)
+                textView_status.setText("connected")
+                textView_current_action.text = "todo"
+                textView_ip.text = "${SharedPref!!.getString("ip", "")}"
             }
             2->{
                 textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorRed))
-                //textView_status.background = ColorDrawable(ContextCompat.getColor(this, R.color.colorRed))
-                textView_status.text = "offline / not reachable"
+                setLoading(false)
+                textView_status.setText("offline / not reachable")
                 textView_current_action.text = "-"
+                textView_ip.text = "${SharedPref!!.getString("ip", "")}"
             }
             3->{
                 textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorLightGrey))
-                textView_status.text = "no ip specified"
+                setLoading(false)
+                textView_status.setText("no ip specified")
                 textView_current_action.text = "-"
+                textView_ip.text = ""
             }
         }
+    }
+
+    private fun getStatus(): Int {
+        when (textView_status.text) {
+            "connecting" -> {
+                return 0
+            }
+            "connected" -> {
+                return 1
+            }
+            "offline / not reachable" -> {
+                return 2
+            }
+            "no ip specified" -> {
+                return 3
+            }
+        }
+        return -1
     }
 
     /**
