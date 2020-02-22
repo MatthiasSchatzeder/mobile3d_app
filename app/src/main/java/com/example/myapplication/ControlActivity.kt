@@ -3,19 +3,38 @@ package com.example.myapplication
 import android.content.Context
 import android.os.Bundle
 import android.os.Vibrator
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import io.socket.client.IO
+import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_control.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * @myVib is used to make a physical haptic engine feedback on control button press
  */
 var myVib: Vibrator? = null
 
+var ControlSocket: Socket? = null
+
 class ControlActivity : AppCompatActivity() {
+
+    override fun onStop() {
+
+        Log.e("test ", "onStop")
+
+        ControlSocket?.disconnect()
+
+        super.onStop()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +87,17 @@ class ControlActivity : AppCompatActivity() {
             }
         }).attach()
 
+        /**
+         * Calls socketIOConnect function
+         * -> sets up socketIO connection
+         */
+        CoroutineScope(Dispatchers.IO).launch {
+            controlSocketConnect()
+
+            ControlSocket?.on("log"){
+                Snackbar.make( constraint_layout_control, it[0].toString(), Snackbar.LENGTH_SHORT).show()
+            }
+        }
 
         /**
          * initialize myVib with the system service Vibrator_Service
@@ -76,6 +106,42 @@ class ControlActivity : AppCompatActivity() {
 
     }// onCreate
 
+    private suspend fun controlSocketConnect() {
+        val ip = SharedPref!!.getString("ip", "")
+
+        val opts = IO.Options()
+        opts.forceNew = true
+        opts.timeout = 1800
+        opts.query = "token=Bearer $MyAuthToken"
+
+        //Log.e("test ", opts.query)
+
+        ControlSocket = IO.socket("http://$ip:4000", opts)
+
+        ControlSocket!!.connect()
+            .on(Socket.EVENT_CONNECT) {
+                Log.e("test ", "connected control")
+
+            }
+            .on(Socket.EVENT_DISCONNECT) {
+                Log.e("test ", "disconnected control")
+
+                runOnUiThread {
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle("connection error")
+                        .setMessage("try to reconnect")
+                        .setPositiveButton("OK") { _, _ ->
+                            finish()
+                        }.create().show()
+                }
+
+            }
+            .on(Socket.EVENT_CONNECT_ERROR) {
+                Log.e("test ", "connect_error control")
+
+            }
+
+    }   //socketIOConnect
 
     /**
      * toolbar menu init

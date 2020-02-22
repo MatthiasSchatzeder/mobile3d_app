@@ -3,39 +3,21 @@ package com.example.myapplication
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import io.socket.client.Ack
-import io.socket.client.IO
-import io.socket.client.Socket
 import kotlinx.android.synthetic.main.fragment_axis.view.*
 
 class Axis : Fragment() {
 
     var distance: Double = 1.0
 
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_axis, container, false)
-
-        /**
-         * test connection
-         */
-        val opts = IO.Options()
-        opts.query = "token=Bearer $MyAuthToken"
-        Log.e("test ", "" + opts.query)
-        val socket: Socket = IO.socket("http://192.168.83.16:4000", opts)
-
-        socket.connect()
-            .on(Socket.EVENT_CONNECT) { Log.e("test ", "connected") }
-            .on(Socket.EVENT_DISCONNECT) { Log.e("test ", "disconnected") }
-
 
         /**
          * set movement length button listeners
@@ -63,25 +45,20 @@ class Axis : Fragment() {
         view.btn_down.setOnClickListener {
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1)) //vibrate
 
-            Toast.makeText(context, "moving $distance mm down ...", Toast.LENGTH_SHORT).show()
+
         }
 
         //upY
         view.btn_up.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
-            socket?.emit("moveForward", distance.toString(), Ack{callback: Array<Any> ->
-                callback.forEach {msg: Any ->
-                    Log.e("test ", msg.toString())
-                }
-                Log.e("socketIOACK", it.toString())
-            })
         }
 
         //left
         view.btn_left.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
+            ControlSocket?.emit("moveLeft", distance.toString())
         }
 
         //right

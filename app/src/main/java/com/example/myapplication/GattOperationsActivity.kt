@@ -254,7 +254,6 @@ class GattOperationsActivity : AppCompatActivity() {
                     //do nothing on OK
                 }
 
-
             val alertDialog = builder.create()
             alertDialog.show()
         }else{
