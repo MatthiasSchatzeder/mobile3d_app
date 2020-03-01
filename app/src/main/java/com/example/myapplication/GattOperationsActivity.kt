@@ -243,11 +243,16 @@ class GattOperationsActivity : AppCompatActivity() {
                 text = "WIFI: <b>" + myConnection.getString("e") + "</b> <br>" +
                         "IP: <b>" + myConnection.getString("i") + "</b> "
 
-                //sets global variable to raspberry ip
-                BackendIP = myConnection.getString("i")
+                /**
+                 * writes ip to the sharedPreference
+                 * editor.apply instead of .commit to prevent ui thread from freezing -> commits changes in another thread or async task
+                 */
+                val editor = SharedPref!!.edit()
+                editor.putString("ip", myConnection.getString("i"))
+                editor.apply()
             }
 
-            val builder = MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_MaterialComponents_MaterialAlertDialog_Centered)
+            val builder = MaterialAlertDialogBuilder(this)
                 .setTitle("Current Connection")
                 .setMessage(HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_LEGACY))
                 .setPositiveButton("OK"){ _, _ ->

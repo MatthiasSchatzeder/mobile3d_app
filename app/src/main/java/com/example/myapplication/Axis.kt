@@ -45,13 +45,14 @@ class Axis : Fragment() {
         view.btn_down.setOnClickListener {
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1)) //vibrate
 
-
+            ControlSocket?.emit("moveBack", distance.toString())
         }
 
         //upY
         view.btn_up.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
+            ControlSocket?.emit("moveForward", distance.toString())
         }
 
         //left
@@ -65,30 +66,35 @@ class Axis : Fragment() {
         view.btn_right.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
+            ControlSocket?.emit("moveRight", distance.toString())
         }
 
         //homeXY
         view.btn_homeXY.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
+            ControlSocket?.emit("moveXYHome", distance.toString())
         }
 
         //upZ
         view.btn_upZ.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
+            ControlSocket?.emit("moveUp", distance.toString())
         }
 
         //downZ
         view.btn_downZ.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
+            ControlSocket?.emit("moveDown", distance.toString())
         }
 
         //homeZ
         view.btn_homeZ.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
+            ControlSocket?.emit("moveZHome", distance.toString())
         }
 
 

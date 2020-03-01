@@ -58,36 +58,42 @@ class Tool : Fragment() {
         view.btn_retract.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
+            ControlSocket?.emit("retract", text_input_distance.text.toString())
         }
 
         //extrude
         view.btn_extrude.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
+            ControlSocket?.emit("extrude", text_input_distance.text.toString())
         }
 
         //set nozzle temperature
         view.btn_set_nozzle_temperature.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
+            ControlSocket?.emit("setHotendTemperature", text_input_nozzle_temperature.text.toString())
         }
 
         //cool down nozzle
         view.btn_cool_down_nozzle.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
+            ControlSocket?.emit("setHotendTemperature", "0")
         }
 
         //set bed temperature
         view.btn_set_bed_temperature.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
+            ControlSocket?.emit("setHeatbedTemperature", text_input_bed_temperature.text.toString())
         }
 
         //cool down bed
         view.btn_cool_down_bed.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
+            ControlSocket?.emit("setHeatbedTemperature", "0")
         }
 
 

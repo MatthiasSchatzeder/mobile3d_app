@@ -39,7 +39,7 @@ class GetAuthTokenAsyncTask : AsyncTask<String, Void, Any?>() {
             with(authURL.openConnection() as HttpURLConnection) {
                 requestMethod = "POST"
 
-                connectTimeout = 2000   //set connect timeout to 2s
+                connectTimeout = 500   //set connect timeout in ms
 
                 val wr = OutputStreamWriter(outputStream)
                 wr.write(reqParam)
@@ -58,28 +58,17 @@ class GetAuthTokenAsyncTask : AsyncTask<String, Void, Any?>() {
                     it.close()
                     MyAuthToken = JSONObject(response).getString("token")
 
+                    /**
+                     * writes auth token to the sharedPreference
+                     * editor.apply instead of .commit to prevent ui thread from freezing -> commits changes in another thread or async task
+                     */
+                    val editor = SharedPref!!.edit()
+                    editor.putString("auth", JSONObject(response).getString("token"))
+                    editor.apply()
+
                     return JSONObject(response).getString("token")
                 }
             }
-
-            /**
-             * open socket io connection
-             */
-            /*val opts = IO.Options()
-            opts.forceNew = true
-            opts.query = "token=Bearer $token"
-            Log.e("test ", "" + opts.query)
-            val socket: Socket = IO.socket(socketURL, opts)
-
-            socket.connect()
-                .on(Socket.EVENT_CONNECT) {
-                    Log.e("test ", "connected")
-                }
-                .on(Socket.EVENT_DISCONNECT) {
-                    Log.e("test ", "disconnected")
-                }
-
-            return socket*/
 
         } catch (exc: Exception) {
             Log.e("test ", "URL not reachable")

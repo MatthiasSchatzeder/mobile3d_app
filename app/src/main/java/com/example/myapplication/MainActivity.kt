@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
  *
  * @myIOSocket: SocketIO object that is used to communicate with the backend
  *
- * [maybe not necessary]
+ * TODO [maybe not necessary]
  * @BackendIP: String with the BackendIP (can be set manually or automatically by connecting the raspberry to a wifi via BLE)
  */
 var MyAuthToken = ""
@@ -46,11 +46,19 @@ class MainActivity : AppCompatActivity() {
 
     private var socket: Socket? = null
 
+    /**
+     * on restart of the activity
+     * if the ip changed
+     *  - disconnect from the old socket io connection
+     *  - and try to connect to the backend with the new ip
+     */
     override fun onRestart() {
-        CoroutineScope(Main).launch {
-            socketIOConnect()
+        if(BackendIP != SharedPref!!.getString("ip", "impossibleBackendIPValue")) {
+            socket?.disconnect()
+            CoroutineScope(Main).launch {
+                socketIOConnect()
+            }
         }
-
 
         super.onRestart()
     }
@@ -69,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         /**
          * create a sharedPref object of the "mobile3d.preferences_ip" file
          */
-        SharedPref = getSharedPreferences("mobile3d.preferences_ip", MODE_PRIVATE)
+        SharedPref = getSharedPreferences("mobile3d.preferences", MODE_PRIVATE)
 
 
         /**
@@ -174,12 +182,16 @@ class MainActivity : AppCompatActivity() {
 
             if (ip!!.isNotEmpty()) {
 
+                BackendIP = ip
+
                 if (MyAuthToken.isEmpty()) {
 
                     val ret = GetAuthTokenAsyncTask().execute(ip).get()
 
-                    if (ret != null) {
-                        MyAuthToken = ret as String
+                    MyAuthToken = if (ret != null) {
+                        ret as String
+                    }else{
+                        SharedPref!!.getString("auth", "")!!
                     }
                 }
 
@@ -187,7 +199,7 @@ class MainActivity : AppCompatActivity() {
 
                     val opts = IO.Options()
                     opts.forceNew = true
-                    opts.timeout = 1800
+                    opts.timeout = 500
                     opts.query = "token=Bearer $MyAuthToken"
 
                     //Log.e("test ", opts.query)
@@ -203,11 +215,7 @@ class MainActivity : AppCompatActivity() {
                             Log.e("test ", "disconnected")
                             setStatusView(2)
 
-                            Snackbar.make(
-                                constraint_layout_main,
-                                "connection error - disconnected",
-                                Snackbar.LENGTH_SHORT
-                            ).show()
+                            Snackbar.make(constraint_layout_main, "connection error - disconnected", Snackbar.LENGTH_SHORT).show()
                         }
                         .on(Socket.EVENT_CONNECT_ERROR) {
                             Log.e("test ", "connect_error")

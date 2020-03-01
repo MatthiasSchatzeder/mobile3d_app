@@ -11,8 +11,8 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import kotlinx.android.synthetic.main.fragment_general.*
 import kotlinx.android.synthetic.main.fragment_general.view.*
-import java.util.zip.Inflater
 
 
 class General : Fragment() {
@@ -36,25 +36,28 @@ class General : Fragment() {
         view.btn_motors_off.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
+            //TODO check is this button / functionality is needed
         }
 
         //set fan speed
         view.btn_set_fan_speed.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
+            ControlSocket?.emit("fanOn", text_input_fan_speed.text.toString())
         }
 
         //fan off
         view.btn_fan_off.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
+            ControlSocket?.emit("fanOff")
         }
 
         return view
     }
 
     //function that hides the keyboard
-    fun hideKeyboard(view: View){
+    private fun hideKeyboard(view: View){
         val inputMethodManager: InputMethodManager = context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }

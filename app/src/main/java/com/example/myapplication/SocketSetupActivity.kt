@@ -40,7 +40,6 @@ class SocketSetupActivity : AppCompatActivity() {
         /**
          * create a sharedPref object of the "mobile3d.preferences_ip" file
          */
-        //val sharedPref = getSharedPreferences("mobile3d.preferences_ip", MODE_PRIVATE)
         val editor = SharedPref!!.edit()
 
         /**
