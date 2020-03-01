@@ -1,6 +1,8 @@
 package com.example.myapplication
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.Vibrator
 import android.util.Log
@@ -28,9 +30,6 @@ var ControlSocket: Socket? = null
 class ControlActivity : AppCompatActivity() {
 
     override fun onStop() {
-
-        Log.e("test ", "onStop")
-
         ControlSocket?.disconnect()
 
         super.onStop()
@@ -91,7 +90,7 @@ class ControlActivity : AppCompatActivity() {
          * Calls socketIOConnect function
          * -> sets up socketIO connection
          */
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             controlSocketConnect()
 
             ControlSocket?.on("log"){
@@ -111,7 +110,7 @@ class ControlActivity : AppCompatActivity() {
 
         val opts = IO.Options()
         opts.forceNew = true
-        opts.timeout = 1800
+        opts.timeout = 500
         opts.query = "token=Bearer $MyAuthToken"
 
         //Log.e("test ", opts.query)
@@ -126,15 +125,7 @@ class ControlActivity : AppCompatActivity() {
             .on(Socket.EVENT_DISCONNECT) {
                 Log.e("test ", "disconnected control")
 
-                runOnUiThread {
-                    MaterialAlertDialogBuilder(this)
-                        .setTitle("connection error")
-                        .setMessage("try to reconnect")
-                        .setPositiveButton("OK") { _, _ ->
-                            finish()
-                        }.create().show()
-                }
-
+                returnConnectionLost()
             }
             .on(Socket.EVENT_CONNECT_ERROR) {
                 Log.e("test ", "connect_error control")
@@ -142,6 +133,12 @@ class ControlActivity : AppCompatActivity() {
             }
 
     }   //socketIOConnect
+
+    fun returnConnectionLost(){
+        val returnIntent = Intent()
+        setResult(Activity.RESULT_OK, returnIntent)
+        finish()
+    }
 
     /**
      * toolbar menu init

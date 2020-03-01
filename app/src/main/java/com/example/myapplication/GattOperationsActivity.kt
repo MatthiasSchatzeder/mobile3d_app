@@ -64,6 +64,12 @@ class GattOperationsActivity : AppCompatActivity() {
         super.onStop()
     }
 
+    override fun onRestart() {
+        returnConnectionLost("connection_lost")
+
+        super.onRestart()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gatt_connect)

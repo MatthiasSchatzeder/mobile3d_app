@@ -3,17 +3,11 @@
 
     <group android:id="@+id/group1">
         <item
-                android:title="Printer"
-                android:id="@+id/item_printer"
-                android:icon="@drawable/ic_home"
-        />
-        <item
                 android:title="Control"
                 android:id="@+id/item_control"
                 android:icon="@drawable/ic_control"
         />
     </group>
-
     <group android:id="@+id/group2">
         <item
                 android:title="Setup Wifi"
@@ -26,8 +20,8 @@
                 android:id="@+id/item_scoket"
                 android:icon="@drawable/ic_link"
                 />
-
     </group>
+
         <item
                 android:title="Settings"
                 android:id="@+id/item_settings"

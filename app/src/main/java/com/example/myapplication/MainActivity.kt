@@ -2,6 +2,7 @@ package com.example.myapplication
 
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -23,6 +24,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+const val SOCKET_IO_CONNECTION_REQUEST = 140
 
 /**
  * [maybe not necessary]
@@ -112,7 +115,7 @@ class MainActivity : AppCompatActivity() {
                     if (getStatus() == 1) {
                         //open control activity
                         val intent = Intent(this, ControlActivity::class.java)
-                        startActivity(intent)
+                        startActivityForResult(intent, SOCKET_IO_CONNECTION_REQUEST)
                     } else {
                         MaterialAlertDialogBuilder(this)
                             .setTitle("No connection")
@@ -121,15 +124,6 @@ class MainActivity : AppCompatActivity() {
                                 //do nothing on OK
                             }.create().show()
                     }
-
-
-                    return@setNavigationItemSelectedListener true
-                }
-                R.id.item_printer -> {
-                    Toast.makeText(this, "Printer pressed", Toast.LENGTH_SHORT).show()
-
-                    val drawerLayout = drawer_layout
-                    drawerLayout.closeDrawers()
 
                     return@setNavigationItemSelectedListener true
                 }
@@ -237,6 +231,19 @@ class MainActivity : AppCompatActivity() {
             }
 
     }   //socketIOConnect
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(requestCode == SOCKET_IO_CONNECTION_REQUEST && resultCode == Activity.RESULT_OK){
+            MaterialAlertDialogBuilder(this)
+                .setTitle("connection error ")
+                .setMessage("disconnected - connection lost")
+                .setPositiveButton("OK") { _, _ ->
+                    //do nothing on ok
+                }.create().show()
+        }
+
+        super.onActivityResult(requestCode, resultCode, data)
+    }
 
     /**
      * enables / disables loading animation
