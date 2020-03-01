@@ -24,6 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 const val SOCKET_IO_CONNECTION_REQUEST = 140
 
@@ -214,6 +215,12 @@ class MainActivity : AppCompatActivity() {
                         .on(Socket.EVENT_CONNECT_ERROR) {
                             Log.e("test ", "connect_error")
                             setStatusView(2)
+                        }
+                        .on("info"){
+                            runOnUiThread {
+                                val myJsonObject = JSONObject(it[0].toString())
+                                textView_current_action.text = myJsonObject.getString("status")
+                            }
                         }
                     /*.on(Socket.EVENT_CONNECT_TIMEOUT) {
                         Log.e("test ", "connect_timeout")

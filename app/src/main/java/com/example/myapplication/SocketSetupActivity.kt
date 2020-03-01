@@ -9,16 +9,11 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
-import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_socket_setup.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.launch
 
 class SocketSetupActivity : AppCompatActivity() {
 
-    val handler = Handler()
-
+    private val handler = Handler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +55,9 @@ class SocketSetupActivity : AppCompatActivity() {
                 val ip = text_input_ip.text.toString()
 
                 if(Patterns.IP_ADDRESS.matcher(ip).matches()){
+                    if(BackendIP.equals(ip)){
+                        finish()
+                    }
 
                     text_input_ip.error = null
 

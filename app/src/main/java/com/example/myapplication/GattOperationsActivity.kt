@@ -248,7 +248,7 @@ class GattOperationsActivity : AppCompatActivity() {
             } else {
                 text = "WIFI: <b>" + myConnection.getString("e") + "</b> <br>" +
                         "IP: <b>" + myConnection.getString("i") + "</b> "
-
+                
                 /**
                  * writes ip to the sharedPreference
                  * editor.apply instead of .commit to prevent ui thread from freezing -> commits changes in another thread or async task
