@@ -48,6 +48,8 @@ var SharedPref: SharedPreferences? = null
 
 class MainActivity : AppCompatActivity() {
 
+    private var refreshEnableFlag = false
+
     private var socket: Socket? = null
 
     /**
@@ -92,6 +94,17 @@ class MainActivity : AppCompatActivity() {
             socketIOConnect()
         }
 
+        /**
+         * if refreshEnableFlag ist true it emits a getInfo event every 2 seconds
+         */
+        CoroutineScope(Dispatchers.Default).launch {
+            while (true){
+                if(refreshEnableFlag) {
+                    socket?.emit("getInfo")
+                }
+                delay(5000)
+            }
+        }
 
 
 
@@ -205,22 +218,26 @@ class MainActivity : AppCompatActivity() {
                         .on(Socket.EVENT_CONNECT) {
                             Log.e("test ", "connected")
                             setStatusView(1)
+
+                            refreshEnableFlag = true
                         }
                         .on(Socket.EVENT_DISCONNECT) {
                             Log.e("test ", "disconnected")
                             setStatusView(2)
+                            displayInfo("")
+
+                            refreshEnableFlag = false
 
                             Snackbar.make(constraint_layout_main, "connection error - disconnected", Snackbar.LENGTH_SHORT).show()
                         }
                         .on(Socket.EVENT_CONNECT_ERROR) {
                             Log.e("test ", "connect_error")
                             setStatusView(2)
+                            displayInfo("")
                         }
                         .on("info"){
-                            runOnUiThread {
-                                val myJsonObject = JSONObject(it[0].toString())
-                                textView_current_action.text = myJsonObject.getString("status")
-                            }
+                            displayInfo(it[0].toString())
+                            Log.e("test ", "info received")
                         }
                     /*.on(Socket.EVENT_CONNECT_TIMEOUT) {
                         Log.e("test ", "connect_timeout")
@@ -239,17 +256,37 @@ class MainActivity : AppCompatActivity() {
 
     }   //socketIOConnect
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if(requestCode == SOCKET_IO_CONNECTION_REQUEST && resultCode == Activity.RESULT_OK){
-            MaterialAlertDialogBuilder(this)
-                .setTitle("connection error ")
-                .setMessage("disconnected - connection lost")
-                .setPositiveButton("OK") { _, _ ->
-                    //do nothing on ok
-                }.create().show()
-        }
+    @SuppressLint("SetTextI18n")
+    private fun displayInfo(info: String){
+        runOnUiThread {
+            if(info == ""){
+                textView_current_action.text = "-"
+                progress_bar_print.progress = 0
+                textView_print_progress_percent.text = "-"
+                textView_hotend_temperature_current.text = "-"
+                textView_hotend_temperature_set.text = ""
+                textView_heatbed_temperature_current.text = "-"
+                textView_heatbed_temperature_set.text = ""
+            }else {
+                val myInfo = JSONObject(info)
+                textView_current_action.text = myInfo.getString("status")
 
-        super.onActivityResult(requestCode, resultCode, data)
+                val progress = myInfo.getJSONObject("progress")
+                val sent = progress.getDouble("sent")
+                val total = progress.getDouble("total")
+                val percent = ((sent / total) * 100).toInt()
+                progress_bar_print.progress = percent
+                textView_print_progress_percent.text = "$percent%"
+
+                val temperature = myInfo.getJSONObject("temperature")
+                val hotend = temperature.getJSONObject("hotend")
+                val heatbed = temperature.getJSONObject("heatbed")
+                textView_hotend_temperature_current.text = hotend.getString("current") + "°C"
+                textView_hotend_temperature_set.text = " / " + hotend.getString("set") + "°C"
+                textView_heatbed_temperature_current.text = heatbed.getString("current") + "°C"
+                textView_heatbed_temperature_set.text = " / " + heatbed.getString("set") + "°C"
+            }
+        }
     }
 
     /**
@@ -273,40 +310,26 @@ class MainActivity : AppCompatActivity() {
         runOnUiThread {
             when (status) {
                 0 -> {
-                    textView_status.setTextColor(
-                        ContextCompat.getColor(
-                            this,
-                            R.color.colorLightGrey
-                        )
-                    )
+                    textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorLightGrey))
                     textView_status.setText("connecting")
-                    textView_current_action.text = "-"
                     textView_ip.text = ""
                 }
                 1 -> {
                     textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorGreen))
                     setLoading(false)
                     textView_status.setText("connected")
-                    textView_current_action.text = "todo"
                     textView_ip.text = "${SharedPref!!.getString("ip", "")}"
                 }
                 2 -> {
                     textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorRed))
                     setLoading(false)
                     textView_status.setText("offline / not reachable")
-                    textView_current_action.text = "-"
                     textView_ip.text = "${SharedPref!!.getString("ip", "")}"
                 }
                 3 -> {
-                    textView_status.setTextColor(
-                        ContextCompat.getColor(
-                            this,
-                            R.color.colorLightGrey
-                        )
-                    )
+                    textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorLightGrey))
                     setLoading(false)
                     textView_status.setText("no ip specified")
-                    textView_current_action.text = "-"
                     textView_ip.text = ""
                 }
             }
@@ -329,6 +352,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return -1   //shouldn't get to this point
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(requestCode == SOCKET_IO_CONNECTION_REQUEST && resultCode == Activity.RESULT_OK){
+            MaterialAlertDialogBuilder(this)
+                .setTitle("connection error ")
+                .setMessage("disconnected - connection lost")
+                .setPositiveButton("OK") { _, _ ->
+                    //do nothing on ok
+                }.create().show()
+        }
+
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     /**

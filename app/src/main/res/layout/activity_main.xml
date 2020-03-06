@@ -88,7 +88,6 @@
                 android:textColor="@color/colorBlack"
                 android:textSize="15sp"
 
-                app:layout_goneMarginTop="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textView_status" />
@@ -118,6 +117,106 @@
                 android:textSize="20sp"
                 android:text="printers current action"
             />
+
+            <androidx.core.widget.ContentLoadingProgressBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/progress_bar_print"
+                    android:scaleY="2"
+                    app:layout_constraintTop_toBottomOf="@id/textView_current_action"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginStart="32dp"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:progressTint="@color/colorPrimary"
+
+
+                    android:progress="35"
+                />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView_print_progress_percent"
+                app:layout_constraintTop_toBottomOf="@id/progress_bar_print"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textSize="20sp"
+                android:layout_marginTop="0dp"
+                android:textColor="@color/colorBlack"
+
+                android:text="35%"
+            />
+
+        <TextView
+                android:id="@+id/textView_hotend_temperature_current"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="100°C"
+                android:textColor="@color/colorBlack"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textView_print_progress_percent" />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView_hotend"
+                app:layout_constraintTop_toTopOf="@id/textView_hotend_temperature_current"
+                app:layout_constraintEnd_toStartOf="@id/textView_hotend_temperature_current"
+                android:text="Hotend: "
+                android:textSize="20sp"
+            />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView_hotend_temperature_set"
+                app:layout_constraintTop_toTopOf="@id/textView_hotend_temperature_current"
+                app:layout_constraintStart_toEndOf="@id/textView_hotend_temperature_current"
+                android:textSize="20sp"
+
+                android:text=" / 200°C"
+            />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView_heatbed_temperature_current"
+                app:layout_constraintTop_toBottomOf="@id/textView_hotend_temperature_current"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="8dp"
+                android:textSize="20sp"
+                android:textColor="@color/colorBlack"
+
+                android:text="45°C"
+            />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView_heatbed_temperature_set"
+                app:layout_constraintTop_toTopOf="@id/textView_heatbed_temperature_current"
+                app:layout_constraintStart_toEndOf="@id/textView_heatbed_temperature_current"
+                android:textSize="20sp"
+
+                android:text=" / 60°C"
+            />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/textView_heatbed_temperature_current"
+                app:layout_constraintEnd_toStartOf="@id/textView_heatbed_temperature_current"
+                android:textSize="20sp"
+                android:text="Heatbed: "
+            />
+
 
         <!--<com.google.android.material.button.MaterialButton
                 android:layout_width="match_parent"
