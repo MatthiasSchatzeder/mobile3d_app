@@ -8,7 +8,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <uses-permission android:name="android.permission.INTERNET" />
+
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -26,21 +28,29 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true"
-            tools:ignore="GoogleAppIndexingWarning">
+            tools:ignore="GoogleAppIndexingWarning"
+            >
         <activity android:name=".SocketSetupActivity"
                 android:windowSoftInputMode="adjustResize"
                 />
-        <activity android:name=".GattOperationsActivity" />
-        <activity android:name=".BluetoothLeActivity" />
+        <activity android:name=".GattOperationsActivity"
+                android:screenOrientation="portrait"
+                tools:ignore="LockedOrientationActivity" />
+        <activity android:name=".BluetoothLeActivity"
+                android:screenOrientation="portrait"
+                tools:ignore="LockedOrientationActivity" />
         <activity android:name=".SettingsActivity" />
         <activity
                 android:name=".ControlActivity"
                 android:screenOrientation="portrait"
+                tools:ignore="LockedOrientationActivity"
                 android:usesCleartextTraffic="true"
-                android:windowSoftInputMode="adjustPan" />
+                android:windowSoftInputMode="adjustPan"
+                 />
         <activity android:name=".MainActivity"
                 android:windowSoftInputMode="adjustResize"
-                >
+                android:screenOrientation="portrait"
+                tools:ignore="LockedOrientationActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

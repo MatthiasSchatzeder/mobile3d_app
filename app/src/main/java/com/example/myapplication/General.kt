@@ -32,13 +32,6 @@ class General : Fragment() {
          * action button on click listeners
          */
 
-        //motors off
-        view.btn_motors_off.setOnClickListener{
-            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
-
-            //TODO check is this button / functionality is needed
-        }
-
         //set fan speed
         view.btn_set_fan_speed.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))

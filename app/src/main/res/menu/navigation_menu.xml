@@ -9,17 +9,19 @@
         />
     </group>
     <group android:id="@+id/group2">
-        <item
-                android:title="Setup Wifi"
-                android:id="@+id/item_wifi"
-                android:icon="@drawable/ic_wifi"
-                />
 
         <item
                 android:title="Setup Socket"
                 android:id="@+id/item_scoket"
                 android:icon="@drawable/ic_link"
                 />
+
+        <item
+                android:title="Setup Wifi"
+                android:id="@+id/item_wifi"
+                android:icon="@drawable/ic_wifi"
+                />
+
     </group>
 
         <item

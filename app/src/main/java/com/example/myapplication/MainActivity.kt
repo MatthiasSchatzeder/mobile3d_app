@@ -64,6 +64,8 @@ class MainActivity : AppCompatActivity() {
             CoroutineScope(Main).launch {
                 socketIOConnect()
             }
+        }else{
+            socket?.emit("getInfo")
         }
 
         super.onRestart()
@@ -311,25 +313,25 @@ class MainActivity : AppCompatActivity() {
             when (status) {
                 0 -> {
                     textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorLightGrey))
-                    textView_status.setText("connecting")
+                    textView_status.text = "connecting"
                     textView_ip.text = ""
                 }
                 1 -> {
                     textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorGreen))
                     setLoading(false)
-                    textView_status.setText("connected")
+                    textView_status.text = "connected"
                     textView_ip.text = "${SharedPref!!.getString("ip", "")}"
                 }
                 2 -> {
                     textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorRed))
                     setLoading(false)
-                    textView_status.setText("offline / not reachable")
+                    textView_status.text = "offline / not reachable"
                     textView_ip.text = "${SharedPref!!.getString("ip", "")}"
                 }
                 3 -> {
                     textView_status.setTextColor(ContextCompat.getColor(this, R.color.colorLightGrey))
                     setLoading(false)
-                    textView_status.setText("no ip specified")
+                    textView_status.text = "no ip specified"
                     textView_ip.text = ""
                 }
             }

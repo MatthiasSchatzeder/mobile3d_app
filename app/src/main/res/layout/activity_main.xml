@@ -115,7 +115,7 @@
 
                 android:fontFamily="@font/roboto_light"
                 android:textSize="20sp"
-                android:text="printers current action"
+                android:text="-"
             />
 
             <androidx.core.widget.ContentLoadingProgressBar
@@ -133,7 +133,7 @@
                     android:progressTint="@color/colorPrimary"
 
 
-                    android:progress="35"
+                    android:progress="0"
                 />
 
         <TextView
@@ -147,7 +147,7 @@
                 android:layout_marginTop="0dp"
                 android:textColor="@color/colorBlack"
 
-                android:text="35%"
+                android:text="-"
             />
 
         <TextView
@@ -155,7 +155,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="100°C"
+                android:text="-"
                 android:textColor="@color/colorBlack"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -180,7 +180,7 @@
                 app:layout_constraintStart_toEndOf="@id/textView_hotend_temperature_current"
                 android:textSize="20sp"
 
-                android:text=" / 200°C"
+                android:text=""
             />
 
         <TextView
@@ -194,7 +194,7 @@
                 android:textSize="20sp"
                 android:textColor="@color/colorBlack"
 
-                android:text="45°C"
+                android:text="-"
             />
 
         <TextView
@@ -205,7 +205,7 @@
                 app:layout_constraintStart_toEndOf="@id/textView_heatbed_temperature_current"
                 android:textSize="20sp"
 
-                android:text=" / 60°C"
+                android:text=""
             />
 
         <TextView

@@ -197,21 +197,12 @@
             android:layout_marginTop="20dp"
 
             android:layout_marginEnd="8dp"
-            app:checkedButton="@id/btn_one_mm"
+            app:checkedButton="@id/btn_ten_mm"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btn_down"
             app:singleSelection="true">
 
-
-        <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_zero_point_one_mm"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="100dp"
-
-
-                android:layout_height="50dp"
-                android:text="0.1mm" />
 
         <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_one_mm"
@@ -228,6 +219,14 @@
 
                 android:layout_height="50dp"
                 android:text="10mm" />
+
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_hundred_mm"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="100dp"
+
+                android:layout_height="50dp"
+                android:text="100mm" />
 
 
     </com.google.android.material.button.MaterialButtonToggleGroup>

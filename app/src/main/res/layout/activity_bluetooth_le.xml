@@ -43,15 +43,14 @@
     <ListView
             android:id="@+id/listView_bluetoothLeDevices"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:divider="@color/colorBlack"
             app:layout_constraintBottom_toTopOf="@+id/btn_scanDevices"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/appbar_layout"
-            app:layout_constraintVertical_bias="0.0"
-            android:footerDividersEnabled="true"
-            android:headerDividersEnabled="true"
-            android:dividerHeight="1dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:dividerHeight="0.1dp"
+            android:layout_margin="8dp"
             >
 
     </ListView>

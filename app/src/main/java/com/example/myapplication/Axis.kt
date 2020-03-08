@@ -6,14 +6,13 @@ import android.os.VibrationEffect
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_axis.view.*
 
 class Axis : Fragment() {
 
-    var distance: Double = 1.0
+    var distance = 10
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -22,17 +21,17 @@ class Axis : Fragment() {
         /**
          * set movement length button listeners
          */
-        view.btn_zero_point_one_mm.setOnClickListener {
-            distance = 0.1
-            view.toggleGroup.check(R.id.btn_zero_point_one_mm)
-        }
         view.btn_one_mm.setOnClickListener {
-            distance = 1.0
+            distance = 1
             view.toggleGroup.check(R.id.btn_one_mm)
         }
         view.btn_ten_mm.setOnClickListener {
-            distance = 10.0
+            distance = 10
             view.toggleGroup.check(R.id.btn_ten_mm)
+        }
+        view.btn_hundred_mm.setOnClickListener {
+            distance = 100
+            view.toggleGroup.check(R.id.btn_hundred_mm)
         }
 
 
