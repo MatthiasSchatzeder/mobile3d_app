@@ -49,7 +49,14 @@ class Tool : Fragment() {
                 hideKeyboard(view)
             }
         }
-        
+
+        /**
+         * set standard values from shared preference
+         */
+        view.text_input_distance.setText(SharedPref?.getString("standardDistance", "5"))
+        view.text_input_nozzle_temperature.setText(SharedPref?.getString("standardNozzleTemp", "200"))
+        view.text_input_bed_temperature.setText(SharedPref?.getString("standardBedTemp", "60"))
+
         /**
          * action buttons on click listeners
          */
@@ -58,21 +65,36 @@ class Tool : Fragment() {
         view.btn_retract.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
-            ControlSocket?.emit("retract", text_input_distance.text.toString())
+            val distance = view.text_input_distance.text.toString().toInt()
+            if(distance < 0 || distance > 100){
+                view.text_input_distance.error = "must be between 0 and 100"
+            }else{
+                ControlSocket?.emit("retract", text_input_distance.text.toString())
+            }
         }
 
         //extrude
         view.btn_extrude.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
-            ControlSocket?.emit("extrude", text_input_distance.text.toString())
+            val distance = view.text_input_distance.text.toString().toInt()
+            if(distance < 0 || distance > 100){
+                view.text_input_distance.error = "must be between 0 and 100"
+            }else{
+                ControlSocket?.emit("extrude", text_input_distance.text.toString())
+            }
         }
 
         //set nozzle temperature
         view.btn_set_nozzle_temperature.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
-            ControlSocket?.emit("setHotendTemperature", text_input_nozzle_temperature.text.toString())
+            val nozzleTemp = view.text_input_nozzle_temperature.text.toString().toInt()
+            if(nozzleTemp < 0 || nozzleTemp > 300){
+                view.text_input_nozzle_temperature.error = "must be between 0 and 300"
+            }else{
+                ControlSocket?.emit("setHotendTemperature", text_input_nozzle_temperature.text.toString())
+            }
         }
 
         //cool down nozzle
@@ -86,7 +108,12 @@ class Tool : Fragment() {
         view.btn_set_bed_temperature.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
-            ControlSocket?.emit("setHeatbedTemperature", text_input_bed_temperature.text.toString())
+            val bedTemp = view.text_input_bed_temperature.text.toString().toInt()
+            if(bedTemp < 0 || bedTemp > 200){
+                view.text_input_bed_temperature.error = "must be between 0 and 200"
+            }else{
+                ControlSocket?.emit("setHeatbedTemperature", text_input_bed_temperature.text.toString())
+            }
         }
 
         //cool down bed

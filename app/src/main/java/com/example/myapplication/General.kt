@@ -29,6 +29,11 @@ class General : Fragment() {
         }
 
         /**
+         * set standard values from shared preference
+         */
+        view.text_input_fan_speed.setText(SharedPref?.getString("standardFanSpeed", "100"))
+
+        /**
          * action button on click listeners
          */
 
@@ -36,7 +41,12 @@ class General : Fragment() {
         view.btn_set_fan_speed.setOnClickListener{
             myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
 
-            ControlSocket?.emit("fanOn", text_input_fan_speed.text.toString())
+            val fanSpeed = view.text_input_fan_speed.text.toString().toInt()
+            if(fanSpeed < 0 ||fanSpeed > 100){
+                view.text_input_fan_speed.error = "must be between 0 and 100"
+            }else{
+                ControlSocket?.emit("fanOn", text_input_fan_speed.text.toString())
+            }
         }
 
         //fan off

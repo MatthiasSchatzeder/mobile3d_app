@@ -26,29 +26,215 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switch_notifications"
-            android:layout_width="match_parent"
+
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/toggleGroup"
+            app:layout_constraintStart_toStartOf="@id/toggleGroup"
+            android:id="@+id/textView_standart_step_size"
+            android:layout_marginTop="8dp"
+            android:text="Standard Step Size for Axis movement"
+        />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleGroup"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="32dp"
+            app:checkedButton="@id/btn_ten_mm"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/appbar_layout"
+            app:singleSelection="true">
 
-            android:text="Enable Push Notifications"
-            android:textSize="20dp"
-            app:layout_constraintEnd_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/appbar_layout" />
+
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_one_mm"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="100dp"
+
+                android:layout_height="50dp"
+                android:text="1mm" />
+
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_ten_mm"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="100dp"
+
+                android:layout_height="50dp"
+                android:text="10mm" />
+
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_hundred_mm"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="100dp"
+
+                android:layout_height="50dp"
+                android:text="100mm" />
+
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <!-- Divider -->
     <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="0.1dp"
             android:id="@+id/divider1"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:background="@android:color/darker_gray"
-            app:layout_constraintTop_toBottomOf="@id/switch_notifications" />
+            app:layout_constraintTop_toBottomOf="@id/toggleGroup"
+            android:layout_marginTop="8dp"
+            />
 
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/text_input_layout_distance"
+
+            app:layout_constraintTop_toBottomOf="@id/divider1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            >
+
+    <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/text_input_distance"
+            android:hint="standard rectract / extrude distance in mm"
+            android:inputType="number"
+            android:text="5"
+            android:selectAllOnFocus="true"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
+            android:focusable="true"
+
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/text_input_layout_nozzle_temperature"
+
+            app:layout_constraintTop_toBottomOf="@id/text_input_layout_distance"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            >
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_input_nozzle_temperature"
+                android:hint="standard nozzle temperature in °C"
+                android:inputType="number"
+                android:text="200"
+                android:selectAllOnFocus="true"
+                android:clickable="true"
+                android:focusableInTouchMode="true"
+                android:focusable="true"
+
+
+                />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/text_input_layout_bed_temperature"
+
+            app:layout_constraintTop_toBottomOf="@id/text_input_layout_nozzle_temperature"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            >
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_input_bed_temperature"
+                android:hint="standard bed temperature in °C"
+                android:inputType="number"
+                android:text="60"
+                android:selectAllOnFocus="true"
+                android:clickable="true"
+                android:focusableInTouchMode="true"
+                android:focusable="true"
+
+                />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Divider -->
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:id="@+id/divider2"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintTop_toBottomOf="@id/text_input_layout_bed_temperature"
+            android:layout_marginTop="8dp"
+            />
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/text_input_layout_fan_speed"
+
+            app:layout_constraintTop_toBottomOf="@id/divider2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            >
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_input_fan_speed"
+                android:hint="standard fan speed in %"
+                android:inputType="number"
+                android:text="100"
+                android:selectAllOnFocus="true"
+                android:clickable="true"
+                android:focusableInTouchMode="true"
+                android:focusable="true"
+
+
+                />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_height"
+            android:id="@+id/btn_save_changes"
+            android:text="save changes"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:elevation="2dp"
+
+            app:cornerRadius="30sp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:layout_margin="32dp"
+            />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

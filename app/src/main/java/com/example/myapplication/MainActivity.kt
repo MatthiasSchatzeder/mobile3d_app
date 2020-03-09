@@ -66,6 +66,7 @@ class MainActivity : AppCompatActivity() {
             }
         }else{
             socket?.emit("getInfo")
+            refreshEnableFlag = true
         }
 
         super.onRestart()
@@ -129,6 +130,8 @@ class MainActivity : AppCompatActivity() {
                     drawerLayout.closeDrawers()
 
                     if (getStatus() == 1) {
+                        refreshEnableFlag = false
+
                         //open control activity
                         val intent = Intent(this, ControlActivity::class.java)
                         startActivityForResult(intent, SOCKET_IO_CONNECTION_REQUEST)
@@ -147,6 +150,8 @@ class MainActivity : AppCompatActivity() {
                     val drawerLayout = drawer_layout
                     drawerLayout.closeDrawers()
 
+                    refreshEnableFlag = false
+
                     val intent = Intent(this, SettingsActivity::class.java)
                     startActivity(intent)
 
@@ -156,6 +161,8 @@ class MainActivity : AppCompatActivity() {
                     val drawerLayout = drawer_layout
                     drawerLayout.closeDrawers()
 
+                    refreshEnableFlag = false
+
                     val intent = Intent(this, BluetoothLeActivity::class.java)
                     startActivity(intent)
 
@@ -164,6 +171,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.item_scoket -> {
                     val drawerLayout = drawer_layout
                     drawerLayout.closeDrawers()
+
+                    refreshEnableFlag = false
 
                     val intent = Intent(this, SocketSetupActivity::class.java)
                     startActivity(intent)

@@ -34,6 +34,20 @@ class Axis : Fragment() {
             view.toggleGroup.check(R.id.btn_hundred_mm)
         }
 
+        /**
+         * set standard values from shared preference
+         */
+        when(SharedPref?.getString("standardStepSize","10mm")){
+            "1mm" -> {
+                view.toggleGroup.check(R.id.btn_one_mm)
+            }
+            "10mm" -> {
+                view.toggleGroup.check(R.id.btn_ten_mm)
+            }
+            "100mm" -> {
+                view.toggleGroup.check(R.id.btn_hundred_mm)
+            }
+        }
 
         /**
          * move button listeners
