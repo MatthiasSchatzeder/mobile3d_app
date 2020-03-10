@@ -27,6 +27,18 @@
     </com.google.android.material.appbar.AppBarLayout>
 
 
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView_standard_values"
+            app:layout_constraintTop_toBottomOf="@id/appbar_layout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="Standard Values"
+            android:textSize="30sp"
+            android:fontFamily="@font/roboto_medium"
+
+        />
 
     <TextView
             android:layout_width="wrap_content"
@@ -34,8 +46,9 @@
             app:layout_constraintBottom_toTopOf="@id/toggleGroup"
             app:layout_constraintStart_toStartOf="@id/toggleGroup"
             android:id="@+id/textView_standart_step_size"
-            android:layout_marginTop="8dp"
+            android:textSize="10sp"
             android:text="Standard Step Size for Axis movement"
+            android:fontFamily="@font/roboto_light"
         />
 
     <com.google.android.material.button.MaterialButtonToggleGroup
@@ -48,7 +61,7 @@
             app:checkedButton="@id/btn_ten_mm"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/appbar_layout"
+            app:layout_constraintTop_toBottomOf="@id/textView_standard_values"
             app:singleSelection="true">
 
 
@@ -231,7 +244,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:elevation="2dp"
 
-            app:cornerRadius="30sp"
+            app:cornerRadius="30dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:layout_margin="32dp"

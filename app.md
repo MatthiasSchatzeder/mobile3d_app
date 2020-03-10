@@ -41,9 +41,13 @@ transparent color: #80000000
 ### ToDo
 
 - automatically connect to the raspberry's wifi
-- setup socket activity
+
+
+
+
 
 
 
 - physical feedback on button click need api 26
   - possible solution -> min api to 26 
+  - 26 is the oldest **supported** version
