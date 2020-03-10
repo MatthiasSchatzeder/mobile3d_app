@@ -51,61 +51,61 @@ class Axis : Fragment() {
 
         /**
          * move button listeners
-         * @see myVib.vibrate -> used to make physical vibration feedback on click
+         * @see Engine.vibrate -> used to make physical vibration feedback on click
          */
 
         //downY
         view.btn_down.setOnClickListener {
-            myVib?.vibrate(VibrationEffect.createOneShot(20, 1)) //vibrate
+            Engine?.vibrate(VibrationEffect.createOneShot(20, 1)) //vibrate
 
             ControlSocket?.emit("moveBack", distance.toString())
         }
 
         //upY
         view.btn_up.setOnClickListener{
-            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+            Engine?.vibrate(VibrationEffect.createOneShot(20, 1))
 
             ControlSocket?.emit("moveForward", distance.toString())
         }
 
         //left
         view.btn_left.setOnClickListener{
-            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+            Engine?.vibrate(VibrationEffect.createOneShot(20, 1))
 
             ControlSocket?.emit("moveLeft", distance.toString())
         }
 
         //right
         view.btn_right.setOnClickListener{
-            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+            Engine?.vibrate(VibrationEffect.createOneShot(20, 1))
 
             ControlSocket?.emit("moveRight", distance.toString())
         }
 
         //homeXY
         view.btn_homeXY.setOnClickListener{
-            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+            Engine?.vibrate(VibrationEffect.createOneShot(20, 1))
 
             ControlSocket?.emit("moveXYHome", distance.toString())
         }
 
         //upZ
         view.btn_upZ.setOnClickListener{
-            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+            Engine?.vibrate(VibrationEffect.createOneShot(20, 1))
 
             ControlSocket?.emit("moveUp", distance.toString())
         }
 
         //downZ
         view.btn_downZ.setOnClickListener{
-            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+            Engine?.vibrate(VibrationEffect.createOneShot(20, 1))
 
             ControlSocket?.emit("moveDown", distance.toString())
         }
 
         //homeZ
         view.btn_homeZ.setOnClickListener{
-            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+            Engine?.vibrate(VibrationEffect.createOneShot(20, 1))
 
             ControlSocket?.emit("moveZHome", distance.toString())
         }

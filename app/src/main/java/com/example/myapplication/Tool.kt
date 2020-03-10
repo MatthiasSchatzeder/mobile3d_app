@@ -63,7 +63,7 @@ class Tool : Fragment() {
 
         //retract
         view.btn_retract.setOnClickListener{
-            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+            Engine?.vibrate(VibrationEffect.createOneShot(20, 1))
 
             val distance = view.text_input_distance.text.toString().toInt()
             if(distance < 0 || distance > 100){
@@ -75,7 +75,7 @@ class Tool : Fragment() {
 
         //extrude
         view.btn_extrude.setOnClickListener{
-            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+            Engine?.vibrate(VibrationEffect.createOneShot(20, 1))
 
             val distance = view.text_input_distance.text.toString().toInt()
             if(distance < 0 || distance > 100){
@@ -87,7 +87,7 @@ class Tool : Fragment() {
 
         //set nozzle temperature
         view.btn_set_nozzle_temperature.setOnClickListener{
-            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+            Engine?.vibrate(VibrationEffect.createOneShot(20, 1))
 
             val nozzleTemp = view.text_input_nozzle_temperature.text.toString().toInt()
             if(nozzleTemp < 0 || nozzleTemp > 300){
@@ -99,14 +99,14 @@ class Tool : Fragment() {
 
         //cool down nozzle
         view.btn_cool_down_nozzle.setOnClickListener{
-            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+            Engine?.vibrate(VibrationEffect.createOneShot(20, 1))
 
             ControlSocket?.emit("setHotendTemperature", "0")
         }
 
         //set bed temperature
         view.btn_set_bed_temperature.setOnClickListener{
-            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+            Engine?.vibrate(VibrationEffect.createOneShot(20, 1))
 
             val bedTemp = view.text_input_bed_temperature.text.toString().toInt()
             if(bedTemp < 0 || bedTemp > 200){
@@ -118,7 +118,7 @@ class Tool : Fragment() {
 
         //cool down bed
         view.btn_cool_down_bed.setOnClickListener{
-            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+            Engine?.vibrate(VibrationEffect.createOneShot(20, 1))
 
             ControlSocket?.emit("setHeatbedTemperature", "0")
         }

@@ -36,7 +36,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:text="Standard Values"
             android:textSize="30sp"
-            android:fontFamily="@font/roboto_medium"
+            android:fontFamily="@font/roboto_light"
 
         />
 

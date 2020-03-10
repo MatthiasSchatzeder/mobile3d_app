@@ -56,8 +56,8 @@
             android:id="@+id/btn_save_changes"
             android:text="save changes"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_input_layout_ip"
-            android:elevation="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
 
             app:cornerRadius="30sp"
             android:insetTop="0dp"

@@ -10,7 +10,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import io.socket.client.IO
@@ -23,7 +22,7 @@ import kotlinx.coroutines.launch
 /**
  * @myVib is used to make a physical haptic engine feedback on control button press
  */
-var myVib: Vibrator? = null
+var Engine: Vibrator? = null
 
 var ControlSocket: Socket? = null
 
@@ -101,7 +100,7 @@ class ControlActivity : AppCompatActivity() {
         /**
          * initialize myVib with the system service Vibrator_Service
          */
-        myVib = this.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        Engine = this.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     }// onCreate
 

@@ -39,7 +39,7 @@ class General : Fragment() {
 
         //set fan speed
         view.btn_set_fan_speed.setOnClickListener{
-            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+            Engine?.vibrate(VibrationEffect.createOneShot(20, 1))
 
             val fanSpeed = view.text_input_fan_speed.text.toString().toInt()
             if(fanSpeed < 0 ||fanSpeed > 100){
@@ -51,7 +51,7 @@ class General : Fragment() {
 
         //fan off
         view.btn_fan_off.setOnClickListener{
-            myVib?.vibrate(VibrationEffect.createOneShot(20, 1))
+            Engine?.vibrate(VibrationEffect.createOneShot(20, 1))
 
             ControlSocket?.emit("fanOff")
         }
