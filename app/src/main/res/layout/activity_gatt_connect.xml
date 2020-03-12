@@ -7,7 +7,8 @@
         android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".GattOperationsActivity">
+        tools:context=".GattOperationsActivity"
+        >
 
 
     <com.google.android.material.appbar.AppBarLayout
@@ -36,7 +37,7 @@
             android:layout_height="0dp"
             app:layout_constraintTop_toBottomOf="@id/appbar_layout"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/textInputLayout_ssid"
+            app:layout_constraintBottom_toTopOf="@id/btn_getNetworks"
             app:layout_constraintEnd_toEndOf="parent"
             android:divider="@color/colorBlack"
             android:dividerHeight="0.1dp"
@@ -70,71 +71,11 @@
             android:visibility="invisible"
             />
 
-    <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/textInputLayout_password"
-            android:hint="Wifi Name / SSID"
-            android:layout_marginBottom="8dp"
-            android:id="@+id/textInputLayout_ssid"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-        >
-
-        <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/toolbar_height"
-                android:id="@+id/textInput_ssid"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/btn_connect"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:hint="Password"
-            app:endIconMode="password_toggle"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-
-            >
-
-        <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/toolbar_height"
-                android:inputType="textPassword"
-                android:id="@+id/textInput_password"
-                />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.button.MaterialButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/btn_getConnection"
-            android:id="@+id/btn_connect"
-            android:text="connect"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-        />
-
     <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_getConnection"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/btn_getNetworks"
+            android:layout_height="@dimen/toolbar_height"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:insetTop="0dp"
@@ -147,12 +88,12 @@
 
     <com.google.android.material.button.MaterialButton
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/toolbar_height"
             android:id="@+id/btn_getNetworks"
             android:text="Get available Networks"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/btn_getConnection"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginStart="8dp"

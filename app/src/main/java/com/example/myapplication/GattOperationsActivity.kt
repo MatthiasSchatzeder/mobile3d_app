@@ -2,8 +2,10 @@ package com.example.myapplication
 
 import android.app.Activity
 import android.bluetooth.*
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.util.Patterns
 import android.view.View
@@ -13,6 +15,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_gatt_connect.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
@@ -23,6 +26,7 @@ import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList
 
+private const val SSID_PASSWORD_REQUEST = 55
 
 class GattOperationsActivity : AppCompatActivity() {
 
@@ -57,15 +61,16 @@ class GattOperationsActivity : AppCompatActivity() {
 
     private var isConnectingToWifi = false
 
-    override fun onStop() {
+    override fun onDestroy() {
         bluetoothGatt?.close()
         networkNames.clear()
 
-        super.onStop()
+        super.onDestroy()
     }
 
     override fun onRestart() {
-        returnConnectionLost("connection_lost")
+        networkNames.clear()
+        arrayAdapter?.notifyDataSetChanged()
 
         super.onRestart()
     }
@@ -73,8 +78,6 @@ class GattOperationsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gatt_connect)
-
-
 
         /**
          * toolbar setup
@@ -107,70 +110,17 @@ class GattOperationsActivity : AppCompatActivity() {
         setLoading(true)
 
         listView_networks.setOnItemClickListener{_, _, position, _ ->
-            textInput_ssid.setText(networkNames[position])
+            //textInput_ssid.setText(networkNames[position])
+            val intent = Intent(this, PasswordIpActivity::class.java)
+            intent.putExtra("ssid", networkNames[position])
+            startActivityForResult(intent, SSID_PASSWORD_REQUEST)
         }
 
         /**
-         * btn connect on click listener
+         * get connection on click listener
          */
-        btn_connect.setOnClickListener {
-            isConnectingToWifi = true
-            hideKeyboard(this)
-
-            //testing
-            //textInput_ssid.setText("ARRIS_24G")
-            //textInput_password.setText("1chGebeN1emalsAuf!")
-
-            if(textInput_ssid.text!!.isNotEmpty() && textInput_password.text!!.isNotEmpty()) {
-                networkNames.clear()
-                arrayAdapter?.notifyDataSetChanged()
-
-                if (myStatus == 1) {
-                    setLoading(true)
-
-                    //connect to selected network
-                    writeToWirelessCommander("{\"c\":1,\"p\":{\"e\":\"${textInput_ssid.text}\",\"p\":\"${textInput_password.text}\"}}\n")
-
-                    textInput_ssid.text!!.clear()
-                    textInput_password.text!!.clear()
-
-                    /**
-                     * coroutinescope is used to execute code async -> in order to siplay
-                     *
-                     * context is Main because an alert dialog is shown [Main is the context to use when UI operations are executed]
-                     */
-                    CoroutineScope(Main).launch {
-                        //wait until sending is done
-                        @Suppress("ControlFlowWithEmptyBody")
-                        while (myStatus == 2);
-
-                        var count = 0
-                        do {
-                            delay(500)
-
-                            writeToWirelessCommander("{\"c\":5}\n")
-
-                            //wait until sending is done
-                            @Suppress("ControlFlowWithEmptyBody")
-                            while (myStatus == 2);
-
-                            count++
-                        }while (!Patterns.IP_ADDRESS.matcher(JSONObject(callbackMsg).getJSONObject("p").getString("i")).matches() && count < 15)
-
-                        showCurrentConnection()
-                    }
-
-
-                }
-            }else{
-                Toast.makeText(this, "enter password and ssid", Toast.LENGTH_SHORT).show()
-            }
-            isConnectingToWifi = false
-        }
-
         btn_getConnection.setOnClickListener{
             if(!isConnectingToWifi) {
-                hideKeyboard(this)
 
                 writeToWirelessCommander("{\"c\":5}\n")
 
@@ -187,47 +137,126 @@ class GattOperationsActivity : AppCompatActivity() {
          * btn get networks on click listener
          */
         btn_getNetworks.setOnClickListener{
-            hideKeyboard(this)
+            if(myStatus == 1) {
+                networkNames.clear()
+                writeToWirelessCommander("{\"c\":0}\n")
 
-            networkNames.clear()
-            writeToWirelessCommander("{\"c\":0}\n")
+                //wait until sending is done
+                @Suppress("ControlFlowWithEmptyBody")
+                while (myStatus == 2);
 
-            //wait until sending is done
-            @Suppress("ControlFlowWithEmptyBody")
-            while (myStatus == 2);
-
-            val networks = JSONObject(callbackMsg).getJSONArray("p")
-            var i = 0
-            if(networks.length() > 0) {
-                while (i < networks.length()) {
-                    val currNetwork: JSONObject = networks.getJSONObject(i)
-                    if(currNetwork.getString("e").isNotEmpty()) {
-                        networkNames.add(currNetwork.getString("e"))
+                val networks = JSONObject(callbackMsg).getJSONArray("p")
+                var i = 0
+                if(networks.length() > 0) {
+                    while (i < networks.length()) {
+                        val currNetwork: JSONObject = networks.getJSONObject(i)
+                        if(currNetwork.getString("e").isNotEmpty()) {
+                            networkNames.add(currNetwork.getString("e"))
+                        }
+                        i++
                     }
-                    i++
+                }else{
+                    Snackbar.make(it, "no visible networks in range", Snackbar.LENGTH_SHORT).show()
                 }
-            }else{
-                Toast.makeText(this, "no visible networks in range", Toast.LENGTH_SHORT).show()
-            }
 
-            arrayAdapter?.notifyDataSetChanged()
+                arrayAdapter?.notifyDataSetChanged()
+            }
         }
 
 
     } //onCreate
 
-    /**
-     * function that hides the keyboard
-     */
-    private fun hideKeyboard(activity: Activity) {
-        val imm = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        //Find the currently focused view, so we can grab the correct window token from it.
-        var view = activity.currentFocus
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = View(activity)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(requestCode == SSID_PASSWORD_REQUEST && resultCode == Activity.RESULT_OK){
+            //Log.e("GattCallback", data?.getStringExtra("ssid") + " " + data?.getStringExtra("password"))
+            val ssid = data?.getStringExtra("ssid")
+            val password = data?.getStringExtra("password")
+            if(!ssid.isNullOrBlank() && !password.isNullOrBlank()){
+                connect(ssid, password)
+            }else{
+                Snackbar.make(main_layout, "connect error - try again", Snackbar.LENGTH_SHORT).show()
+            }
+
         }
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
+
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    /**
+     * function that gets all networks using GATT commands
+     */
+    private fun getNetworks(){
+        networkNames.clear()
+        writeToWirelessCommander("{\"c\":0}\n")
+
+        //wait until sending is done
+        @Suppress("ControlFlowWithEmptyBody")
+        while (myStatus == 2);
+
+        val networks = JSONObject(callbackMsg).getJSONArray("p")
+        var i = 0
+        if(networks.length() > 0) {
+            while (i < networks.length()) {
+                val currNetwork: JSONObject = networks.getJSONObject(i)
+                if(currNetwork.getString("e").isNotEmpty()) {
+                    networkNames.add(currNetwork.getString("e"))
+                }
+                i++
+            }
+        }else{
+            Toast.makeText(this, "no visible networks in range", Toast.LENGTH_SHORT).show()
+        }
+
+        arrayAdapter?.notifyDataSetChanged()
+    }
+
+    /**
+     * function that uses GATT commands to connect to the given wifi name and password
+     */
+    private fun connect(ssid: String, password: String){
+        isConnectingToWifi = true
+
+        if(ssid.isNotEmpty()  && password.isNotEmpty()) {
+            networkNames.clear()
+            arrayAdapter?.notifyDataSetChanged()
+
+            if (myStatus == 1) {
+                setLoading(true)
+
+                //connect to selected network
+                writeToWirelessCommander("{\"c\":1,\"p\":{\"e\":\"${ssid}\",\"p\":\"${password}\"}}\n")
+
+                /**
+                 * coroutinescope is used to execute code async
+                 *
+                 * context is Main because an alert dialog is shown [Main is the context to use when UI operations are executed]
+                 */
+                CoroutineScope(Main).launch {
+                    //wait until sending is done
+                    @Suppress("ControlFlowWithEmptyBody")
+                    while (myStatus == 2);
+
+                    var count = 0
+                    do {
+                        delay(500)
+
+                        writeToWirelessCommander("{\"c\":5}\n")
+
+                        //wait until sending is done
+                        @Suppress("ControlFlowWithEmptyBody")
+                        while (myStatus == 2);
+
+                        count++
+                    }while (!Patterns.IP_ADDRESS.matcher(JSONObject(callbackMsg).getJSONObject("p").getString("i")).matches() && count < 15)
+
+                    showCurrentConnection()
+                }   //CoroutineScope
+
+            }
+        }else{
+            Toast.makeText(this, "enter password and ssid", Toast.LENGTH_SHORT).show()
+        }
+        isConnectingToWifi = false
     }
 
     /**
@@ -393,9 +422,9 @@ class GattOperationsActivity : AppCompatActivity() {
                     }
                 }
 
-
                 //disables loading animation
                 setLoading(false)
+
             }else{
                 returnConnectionLost("wrong_device")
             }

@@ -26,7 +26,9 @@
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true"
             tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".PasswordIpActivity"></activity>
+        <activity
+                android:name=".PasswordIpActivity"
+                android:windowSoftInputMode="adjustResize"/>
         <activity
                 android:name=".SocketSetupActivity"
                 android:windowSoftInputMode="adjustResize" />
