@@ -37,41 +37,38 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/relative_layout_extruder_movement"
-            app:layout_constraintTop_toBottomOf="@id/text_input_layout_distance"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+
+    <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_extrude"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
-    >
+            android:layout_marginEnd="4dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Extrude"
 
-        <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_extrude"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_toEndOf="@id/btn_retract"
-                android:layout_marginStart="8dp"
-                android:text="Extrude"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-
-        />
+            app:layout_constraintEnd_toStartOf="@id/btn_retract"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_input_layout_distance"
+            />
 
         <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_retract"
-                android:layout_width="185dp"
+                android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:text="Retract"
-                android:layout_alignParentStart="true"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/text_input_layout_distance"
+                app:layout_constraintStart_toEndOf="@id/btn_extrude"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="4dp"
         />
 
-    </RelativeLayout>
 
     <!-- Divider -->
     <View
@@ -79,7 +76,7 @@
             android:layout_height="2dp"
             android:id="@+id/divider"
             android:background="@android:color/darker_gray"
-            app:layout_constraintTop_toBottomOf="@id/relative_layout_extruder_movement"
+            app:layout_constraintTop_toBottomOf="@id/btn_extrude"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
@@ -115,40 +112,41 @@
             />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/relative_layout_extruder_temperature"
-            app:layout_constraintTop_toBottomOf="@id/text_input_layout_nozzle_temperature"
-            app:layout_constraintEnd_toEndOf="parent"
+    <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_set_nozzle_temperature"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:text="Set Nozzle Temperature"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_input_layout_nozzle_temperature"
+            app:layout_constraintEnd_toStartOf="@id/btn_cool_down_nozzle"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
-            >
+            android:layout_marginEnd="4dp"
+
+            />
 
     <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_cool_down_nozzle"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="60dp"
-            android:layout_toEndOf="@id/btn_set_nozzle_temperature"
-            android:layout_marginStart="8dp"
             android:text="Cool Down Nozzle"
             android:insetTop="0dp"
             android:insetBottom="0dp"
 
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_input_layout_nozzle_temperature"
+            app:layout_constraintStart_toEndOf="@id/btn_set_nozzle_temperature"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="4dp"
+
             />
 
-    <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_set_nozzle_temperature"
-            android:layout_width="185dp"
-            android:layout_height="60dp"
-            android:text="Set Nozzle Temperature"
-            android:layout_alignParentStart="true"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            />
-    </RelativeLayout>
+
 
     <!-- Divider -->
     <View
@@ -156,7 +154,7 @@
             android:layout_height="2dp"
             android:id="@+id/divider_2"
             android:background="@android:color/darker_gray"
-            app:layout_constraintTop_toBottomOf="@id/relative_layout_extruder_temperature"
+            app:layout_constraintTop_toBottomOf="@id/btn_set_nozzle_temperature"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
@@ -192,40 +190,39 @@
                 />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/relative_layout_bed_temperature"
+    <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_set_bed_temperature"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:text="Set Bed Temperature"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_input_layout_bed_temperature"
+            app:layout_constraintEnd_toStartOf="@id/btn_cool_down_bed"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="4dp"
+            />
+
+    <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_cool_down_bed"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:text="Cool Down Bed"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+
             app:layout_constraintTop_toBottomOf="@id/text_input_layout_bed_temperature"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toEndOf="@id/btn_set_bed_temperature"
             android:layout_marginTop="8dp"
-            >
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="4dp"
+            />
 
-        <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_cool_down_bed"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_toEndOf="@id/btn_set_bed_temperature"
-                android:layout_marginStart="8dp"
-                android:text="Cool Down Bed"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
 
-                />
-
-        <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_set_bed_temperature"
-                android:layout_width="185dp"
-                android:layout_height="60dp"
-                android:text="Set Bed Temperature"
-                android:layout_alignParentStart="true"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                />
-    </RelativeLayout>
 
 
     
