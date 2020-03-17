@@ -1,10 +1,8 @@
-package com.example.myapplication
+package com.mobile3d.application
 
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.Menu
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_settings.*
@@ -25,8 +23,6 @@ class SettingsActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener {
             finish()
         }
-
-        val handler = Handler()
 
         /**
          * set movement length button listeners
@@ -124,7 +120,6 @@ class SettingsActivity : AppCompatActivity() {
                 },1000)
 
             }
-
 
         } //btnSaveChanges
 

@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.mobile3d.application
 
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4

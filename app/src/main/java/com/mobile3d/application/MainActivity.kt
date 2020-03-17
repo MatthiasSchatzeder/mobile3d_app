@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.mobile3d.application
 
 
 import android.annotation.SuppressLint
@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.messaging.FirebaseMessaging
 import io.socket.client.IO
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_main.*
@@ -88,6 +89,17 @@ class MainActivity : AppCompatActivity() {
          */
         SharedPref = getSharedPreferences("mobile3d.preferences", MODE_PRIVATE)
 
+        /**
+         * firebase setup
+         */
+        FirebaseMessaging.getInstance().subscribeToTopic("printer")
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    Log.e("firebase", "subscribing was successful")
+                }else{
+                    Log.e("firebase", "subscribing was NOT successful")
+                }
+            }
 
         /**
          * Calls socketIOConnect function
@@ -108,8 +120,6 @@ class MainActivity : AppCompatActivity() {
                 delay(5000)
             }
         }
-
-
 
         /**
          * listens to clicks of the Navigation Icon on the toolbar

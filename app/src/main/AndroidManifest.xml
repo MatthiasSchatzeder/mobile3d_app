@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        package="com.example.myapplication">
+        package="com.mobile3d.application">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -27,31 +27,31 @@
             android:usesCleartextTraffic="true"
             tools:ignore="GoogleAppIndexingWarning">
         <activity
-                android:name=".PasswordIpActivity"
+                android:name="com.mobile3d.application.PasswordIpActivity"
                 android:windowSoftInputMode="adjustResize"/>
         <activity
-                android:name=".SocketSetupActivity"
+                android:name="com.mobile3d.application.SocketSetupActivity"
                 android:windowSoftInputMode="adjustResize" />
         <activity
-                android:name=".GattOperationsActivity"
+                android:name="com.mobile3d.application.GattOperationsActivity"
                 android:screenOrientation="portrait"
                 android:windowSoftInputMode="adjustResize"
                 tools:ignore="LockedOrientationActivity" />
         <activity
-                android:name=".BluetoothLeActivity"
+                android:name="com.mobile3d.application.BluetoothLeActivity"
                 android:screenOrientation="portrait"
                 tools:ignore="LockedOrientationActivity" />
         <activity
-                android:name=".SettingsActivity"
+                android:name="com.mobile3d.application.SettingsActivity"
                 android:windowSoftInputMode="adjustResize" />
         <activity
-                android:name=".ControlActivity"
+                android:name="com.mobile3d.application.ControlActivity"
                 android:screenOrientation="portrait"
                 android:usesCleartextTraffic="true"
                 android:windowSoftInputMode="adjustResize"
                 tools:ignore="LockedOrientationActivity" />
         <activity
-                android:name=".MainActivity"
+                android:name="com.mobile3d.application.MainActivity"
                 android:screenOrientation="portrait"
                 android:windowSoftInputMode="adjustResize"
                 tools:ignore="LockedOrientationActivity">
@@ -62,9 +62,31 @@
             </intent-filter>
         </activity>
 
+        <service
+                android:name="com.mobile3d.application.MyFirebaseMessagingService"
+                android:stopWithTask="false"
+                android:exported="false"
+                >
+            <intent-filter>
+                <action
+                        android:name="com.google.firebase.MESSAGING_EVENT"
+                        />
+            </intent-filter>
+
+        </service>
+
+        <meta-data
+                android:name="com.google.firebase.messaging.default_notification_icon"
+                android:resource="@drawable/ic_mobile_3d_borderless" />
+        <meta-data
+                android:name="com.google.firebase.messaging.default_notification_color"
+                android:resource="@color/colorPrimary" />
+
         <meta-data
                 android:name="preloaded_fonts"
                 android:resource="@array/preloaded_fonts" />
+
+
     </application>
 
 </manifest>

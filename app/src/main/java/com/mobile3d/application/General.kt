@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.mobile3d.application
 
 
 import android.app.Activity

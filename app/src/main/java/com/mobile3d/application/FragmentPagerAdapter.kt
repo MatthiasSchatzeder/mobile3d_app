@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.mobile3d.application
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
