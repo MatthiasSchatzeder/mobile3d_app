@@ -43,7 +43,7 @@
                 tools:ignore="LockedOrientationActivity" />
         <activity
                 android:name="com.mobile3d.application.SettingsActivity"
-                android:windowSoftInputMode="adjustResize" />
+                />
         <activity
                 android:name="com.mobile3d.application.ControlActivity"
                 android:screenOrientation="portrait"
