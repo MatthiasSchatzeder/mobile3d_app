@@ -68,6 +68,8 @@ class BluetoothLeActivity: AppCompatActivity() {
         devices.clear()
         arrayAdapter?.notifyDataSetChanged()
 
+        checkEnableBT()
+
         super.onResume()
     }
 
