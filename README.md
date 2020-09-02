@@ -19,7 +19,7 @@ In order to make the setup as easy as possible the app has some helpful features
 
 
 
-### controls
+### Controls
 
-The printer can also be controlled over the android application. Basic tasks like moving axis, heating up the nozzle and the bed are easy to accomplish within the app.
+The printer can also be controlled over the android application. Basic tasks like moving axis, heating up the nozzle and the bed are easy to accomplish within the app. [Socket IO](https://github.com/socketio/socket.io) is being used for controlling the 3d printer.
 
